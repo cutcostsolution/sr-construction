@@ -1,0 +1,14 @@
+name: Deploy to Render
+on:
+  push:
+    branches: [main]
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger Render Deploy
+        run: |
+          echo "Triggering Render deploy..."
+          curl -X POST "https://api.render.com/deploy/srv-dbs3ab5g1s2s73e2ggkg?key=MraXXuqOHpk"
+          echo "Deploy triggered. Waiting 90s for build to start..."
+          sleep 90
