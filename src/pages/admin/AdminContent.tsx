@@ -1,0 +1,21 @@
+import { useEffect, useState } from "react";
+import { ExternalLink, Image, Save, Trash2 } from "lucide-react";
+import { trpc } from "@/providers/trpc";
+import MediaPicker from "@/components/admin/MediaPicker";
+
+const PAGE_NAMES: Record<string, string> = { home: "Homepage", about: "About Us", services: "Services landing", projects: "Projects landing", founder: "The Founder", network: "Our Network", contact: "Contact", consultation: "Consultation", blogs: "Blogs landing" };
+const FIELD_NAMES: Record<string, string> = { kicker: "Hero eyebrow", title: "Main title / name", body: "Main introduction", heroImage: "Hero image", introTitle: "Introduction title", introBody: "Introduction text", image: "Feature image", ctaTitle: "Closing CTA title", ctaBody: "Closing CTA text", storyTitle: "Story title", storyBody: "Story text", role: "Role / title", quote: "Founder quote", photo: "Founder photograph", website: "Personal website URL", linkedin: "LinkedIn profile URL", x: "X / Twitter profile URL" };
+
+export default function AdminContent() {
+  const query = trpc.admin.content.useQuery(); const utils = trpc.useUtils();
+  const [page, setPage] = useState("home"); const [draft, setDraft] = useState<Record<string, string>>({});
+  const current = query.data?.pages.find((p) => p.page === page);
+  useEffect(() => setDraft(current?.content ?? {}), [current?.id, query.dataUpdatedAt]);
+  const save = trpc.admin.updatePage.useMutation({ onSuccess: () => { utils.admin.content.invalidate(); utils.public.bootstrap.invalidate(); } });
+  const removeMedia = trpc.admin.deleteMedia.useMutation({ onSuccess: () => { utils.admin.content.invalidate(); utils.admin.media.invalidate(); } });
+  const media = trpc.admin.media.useQuery();
+  return <div className="admin-page"><div className="admin-page-head"><div><span className="eyebrow">Hands-off website management</span><h1>Website content & media</h1><p>Edit public page copy, founder content and imagery without touching code.</p></div><a href={`/${page === "home" ? "" : page}`} target="_blank" className="button button-outline"><ExternalLink /> Preview page</a></div>
+    <div className="content-editor-layout"><aside className="page-list">{Object.entries(PAGE_NAMES).map(([key, name]) => <button className={page === key ? "active" : ""} key={key} onClick={() => setPage(key)}>{name}<span>{query.data?.pages.find((p) => p.page === key) ? "Ready" : "Not seeded"}</span></button>)}</aside><section className="admin-panel content-form"><div className="admin-panel-head"><div><span className="eyebrow">Editing</span><h2>{PAGE_NAMES[page]}</h2></div></div>{Object.entries(draft).map(([key, value]) => /image|photo/i.test(key) ? <MediaPicker key={key} label={FIELD_NAMES[key] ?? key} value={value} onChange={(v) => setDraft({ ...draft, [key]: v })} /> : <label className="field" key={key}><span>{FIELD_NAMES[key] ?? key}</span>{value.length > 110 ? <textarea value={value} onChange={(e) => setDraft({ ...draft, [key]: e.target.value })} /> : <input value={value} onChange={(e) => setDraft({ ...draft, [key]: e.target.value })} />}</label>)}{Object.keys(draft).length === 0 && <p>No fields found for this page.</p>}<button className="button button-dark" disabled={save.isPending} onClick={() => save.mutate({ page, content: draft })}><Save />{save.isPending ? "Saving…" : "Publish page changes"}</button>{save.isSuccess && <p className="form-success">Page content updated. The public website now uses these values.</p>}</section></div>
+    <section className="admin-panel media-library-admin"><div className="admin-panel-head"><div><span className="eyebrow">Uploaded assets</span><h2>Media library</h2></div><span>{media.data?.length ?? 0} files</span></div><div className="admin-media-list">{media.data?.map((m) => <article key={m.id}><img src={m.url} alt={m.name} /><div><strong>{m.name.split("/").pop()}</strong><small>{Math.round(m.size / 1024)} KB · {m.contentType}</small><code>{m.key}</code></div><button onClick={() => { if (window.confirm("Delete this uploaded file? Check that it is not in use first.")) removeMedia.mutate({ id: m.id, key: m.key }); }}><Trash2 /></button></article>)}</div>{media.data?.length === 0 && <div className="admin-empty"><Image /> Upload images through any image field above or in the catalogue editor.</div>}</section>
+  </div>;
+}
