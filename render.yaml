@@ -2,6 +2,7 @@ services:
   - type: web
     name: sr-construction
     runtime: node
+    branch: live
     buildCommand: rm -rf node_modules dist && npm install && npm run build
     startCommand: NODE_ENV=production node dist/boot.js
     envVars:
