@@ -521,3 +521,4 @@ h3 { font-size: clamp(20px,2.5vw,30px); line-height: 1.2; }
   .admin-shell { grid-template-columns: 1fr; }
   .admin-menu { display: block; }
 }
+/* Deploy trigger 1794675745 */
