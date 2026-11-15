@@ -97,8 +97,8 @@ export default function Home() {
           }}
         />
 
-        <div className="container" style={{ position: "relative", zIndex: 2, padding: "140px 5vw 100px" }}>
-          <div style={{ display: "grid", gridTemplateColumns: "1.3fr 0.7fr", gap: 80, alignItems: "center" }}>
+        <div className="container hero-pad" style={{ position: "relative", zIndex: 2, padding: "140px 5vw 100px" }}>
+          <div className="grid-split" style={{ display: "grid", gridTemplateColumns: "1.3fr 0.7fr", gap: 80, alignItems: "center" }}>
             <div>
               <span className="caption" style={{ color: "var(--accent)", display: "block", marginBottom: 24 }}>
                 {page.kicker || "Nigerian Construction Excellence"}
@@ -149,11 +149,11 @@ export default function Home() {
               <div style={{ marginTop: 32, paddingTop: 24, borderTop: "1px solid var(--line-dark)" }}>
                 <div style={{ display: "flex", gap: 32 }}>
                   <div>
-                    <strong style={{ fontFamily: "var(--font-display)", fontSize: 32, color: "var(--text)", display: "block" }}>50+</strong>
+                    <strong className="stat-number" style={{ fontFamily: "var(--font-display)", fontSize: 32, color: "var(--text)", display: "block" }}>50+</strong>
                     <span style={{ fontSize: 12, color: "var(--text-faint)", textTransform: "uppercase", letterSpacing: "0.1em" }}>Projects</span>
                   </div>
                   <div>
-                    <strong style={{ fontFamily: "var(--font-display)", fontSize: 32, color: "var(--text)", display: "block" }}>12+</strong>
+                    <strong className="stat-number" style={{ fontFamily: "var(--font-display)", fontSize: 32, color: "var(--text)", display: "block" }}>12+</strong>
                     <span style={{ fontSize: 12, color: "var(--text-faint)", textTransform: "uppercase", letterSpacing: "0.1em" }}>Years</span>
                   </div>
                 </div>
@@ -207,7 +207,7 @@ export default function Home() {
             <h2 className="display-md">Built on four principles</h2>
             <span className="accent-line" style={{ marginTop: 24 }} />
           </div>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 24 }}>
+          <div className="grid-4" style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 24 }}>
             {[
               { icon: Shield, title: "Quality", desc: "The right materials, sound technical decisions and careful execution at every stage." },
               { icon: Clock, title: "Speed", desc: "Clear coordination keeps people, decisions and site work moving forward." },
@@ -245,7 +245,7 @@ export default function Home() {
       {/* ===== SERVICES PREVIEW ===== */}
       <section ref={servicesRef} className="section-cream section-pad">
         <div className="container">
-          <div style={{ display: "grid", gridTemplateColumns: "0.4fr 1fr", gap: 80, alignItems: "start" }}>
+          <div className="grid-split" style={{ display: "grid", gridTemplateColumns: "0.4fr 1fr", gap: 80, alignItems: "start" }}>
             <div>
               <span className="caption" style={{ color: "var(--accent)", display: "block", marginBottom: 16 }}>
                 What We Do
@@ -260,7 +260,7 @@ export default function Home() {
                 All Services <ArrowUpRight size={16} />
               </Link>
             </div>
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 20 }}>
+            <div className="grid-2" style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 20 }}>
               {(services.data ?? []).slice(0, 4).map((s) => (
                 <div
                   key={s.id}
@@ -307,7 +307,7 @@ export default function Home() {
               View All Projects <ArrowUpRight size={16} />
             </Link>
           </div>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 24 }}>
+          <div className="grid-3 project-grid" style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 24 }}>
             {(projects.data ?? []).slice(0, 3).map((p) => (
               <Link
                 key={p.id}
@@ -371,7 +371,7 @@ export default function Home() {
       {/* ===== FOUNDER TEASER ===== */}
       <section ref={founderRef} className="section-void-soft section-pad">
         <div className="container">
-          <div style={{ display: "grid", gridTemplateColumns: "0.42fr 1fr", gap: 80, alignItems: "center" }}>
+          <div className="grid-asym" style={{ display: "grid", gridTemplateColumns: "0.42fr 1fr", gap: 80, alignItems: "center" }}>
             <div className="founder-reveal" style={{ position: "relative" }}>
               <img
                 src="/assets/founder.jpg"
@@ -385,6 +385,7 @@ export default function Home() {
                 }}
               />
               <div
+                className="float-badge"
                 style={{
                   position: "absolute",
                   bottom: -20,
@@ -422,7 +423,7 @@ export default function Home() {
       {/* ===== METRICS ===== */}
       <section ref={metricsRef} className="section-dark section-pad-sm" style={{ borderTop: "1px solid var(--line-dark)" }}>
         <div className="container">
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 24 }}>
+          <div className="grid-4" style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 24 }}>
             {[
               { icon: Building, value: "50+", label: "Projects Delivered" },
               { icon: Users, value: "30+", label: "Team Members" },

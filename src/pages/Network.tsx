@@ -85,7 +85,7 @@ export default function Network() {
             background: "linear-gradient(135deg, rgba(10,10,15,0.85) 0%, rgba(10,10,15,0.6) 100%)",
           }}
         />
-        <div className="container" style={{ position: "relative", zIndex: 2, textAlign: "center", padding: "140px 5vw 80px" }}>
+        <div className="container hero-pad" style={{ position: "relative", zIndex: 2, textAlign: "center", padding: "140px 5vw 80px" }}>
           <span className="caption" style={{ color: "var(--accent)", display: "block", marginBottom: 20 }}>
             {page.kicker || "Join Our Network"}
           </span>
@@ -107,7 +107,7 @@ export default function Network() {
             </span>
             <h2 className="display-md">Three ways to partner</h2>
           </div>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 20, marginBottom: 80 }}>
+          <div className="grid-3" style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 20, marginBottom: 80 }}>
             {types.map((t) => (
               <button
                 key={t.key}

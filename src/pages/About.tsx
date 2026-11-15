@@ -58,7 +58,7 @@ export default function About() {
             background: "linear-gradient(to top, rgba(10,10,15,0.92) 0%, rgba(10,10,15,0.5) 50%, rgba(10,10,15,0.3) 100%)",
           }}
         />
-        <div className="container about-hero-text" style={{ position: "relative", zIndex: 2, padding: "160px 5vw 100px" }}>
+        <div className="container about-hero-text hero-pad" style={{ position: "relative", zIndex: 2, padding: "160px 5vw 100px" }}>
           <span className="caption" style={{ color: "var(--accent)", display: "block", marginBottom: 20 }}>
             {page.kicker || "About SR Construction"}
           </span>
@@ -74,7 +74,7 @@ export default function About() {
       {/* ===== STORY SECTION: ASYMMETRIC EDITORIAL ===== */}
       <section ref={storyRef} className="section-dark section-pad">
         <div className="container">
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1.2fr", gap: 100, alignItems: "center" }}>
+          <div className="grid-split" style={{ display: "grid", gridTemplateColumns: "1fr 1.2fr", gap: 100, alignItems: "center" }}>
             <div className="about-story-reveal">
               <img
                 src="/assets/hero-foundation.jpg"
@@ -122,7 +122,7 @@ export default function About() {
             <h2 className="display-md">What drives every decision</h2>
             <span className="accent-line" style={{ margin: "24px auto 0" }} />
           </div>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 20 }}>
+          <div className="grid-4" style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 20 }}>
             {[
               { icon: Shield, title: "Integrity", desc: "We say what we mean and deliver what we promise. No hidden costs, no compromised materials." },
               { icon: Clock, title: "Discipline", desc: "Timelines are commitments, not suggestions. Every phase is planned, tracked and executed with precision." },

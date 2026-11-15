@@ -33,9 +33,9 @@ export default function Projects() {
   return (
     <>
       {/* ===== HERO: SPLIT WITH IMAGE ===== */}
-      <section ref={heroRef} className="section-dark" style={{ padding: "160px 5vw 80px" }}>
+      <section ref={heroRef} className="section-dark hero-pad" style={{ padding: "160px 5vw 80px" }}>
         <div className="container">
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 60, alignItems: "center" }}>
+          <div className="grid-split" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 60, alignItems: "center" }}>
             <div className="projects-hero-text">
               <span className="caption" style={{ color: "var(--accent)", display: "block", marginBottom: 20 }}>
                 {page.kicker || "Our Portfolio"}
@@ -61,6 +61,7 @@ export default function Projects() {
                 }}
               />
               <div
+                className="float-badge"
                 style={{
                   position: "absolute",
                   bottom: -20,
@@ -119,7 +120,7 @@ export default function Projects() {
       {/* ===== PROJECTS GRID: CINEMATIC ===== */}
       <section ref={gridRef} className="section-dark section-pad" style={{ paddingTop: 0 }}>
         <div className="container">
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 24 }}>
+          <div className="grid-3 project-grid" style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 24 }}>
             {filtered.map((p, i) => (
               <Link
                 key={p.id}

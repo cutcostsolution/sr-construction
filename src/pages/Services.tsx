@@ -36,7 +36,7 @@ export default function Services() {
       {/* ===== HERO: MASSIVE TYPOGRAPHY, NO IMAGE ===== */}
       <section
         ref={heroRef}
-        className="section-dark"
+        className="section-dark hero-pad-sm"
         style={{ padding: "180px 5vw 100px", position: "relative", overflow: "hidden" }}
       >
         <div
@@ -69,7 +69,7 @@ export default function Services() {
       {/* ===== SERVICES GRID ===== */}
       <section ref={gridRef} className="section-dark section-pad" style={{ paddingTop: 0 }}>
         <div className="container">
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 20 }}>
+          <div className="grid-2" style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 20 }}>
             {(services.data ?? []).map((s, i) => (
               <Link
                 key={s.id}
@@ -132,7 +132,7 @@ export default function Services() {
             <h2 className="display-md">Four steps to your build</h2>
             <span className="accent-line" style={{ margin: "24px auto 0" }} />
           </div>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 24 }}>
+          <div className="grid-4" style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 24 }}>
             {[
               { num: "01", title: "Discovery", desc: "We visit your site, understand your vision and assess the technical requirements before any commitment." },
               { num: "02", title: "Planning", desc: "Detailed scope, timeline and cost breakdown. Every material spec'd. Every phase mapped." },
@@ -174,6 +174,7 @@ export default function Services() {
                 <p style={{ fontSize: 14, lineHeight: 1.7, color: "var(--text-dim)" }}>{step.desc}</p>
                 {i < 3 && (
                   <div
+                    className="process-arrow"
                     style={{
                       position: "absolute",
                       top: "50%",

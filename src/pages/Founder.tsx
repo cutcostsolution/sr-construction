@@ -33,9 +33,9 @@ export default function Founder() {
   return (
     <>
       {/* ===== HERO: ASYMMETRIC PORTRAIT + TEXT ===== */}
-      <section ref={heroRef} className="section-dark" style={{ padding: "160px 5vw 100px" }}>
+      <section ref={heroRef} className="section-dark hero-pad" style={{ padding: "160px 5vw 100px" }}>
         <div className="container">
-          <div style={{ display: "grid", gridTemplateColumns: "0.38fr 1fr", gap: 80, alignItems: "center" }}>
+          <div className="grid-asym" style={{ display: "grid", gridTemplateColumns: "0.38fr 1fr", gap: 80, alignItems: "center" }}>
             <div className="founder-hero-img" style={{ position: "relative" }}>
               <img
                 src="/assets/founder.jpg"
@@ -49,6 +49,7 @@ export default function Founder() {
                 }}
               />
               <div
+                className="float-badge"
                 style={{
                   position: "absolute",
                   bottom: -16,
@@ -153,7 +154,7 @@ export default function Founder() {
             </span>
             <h2 className="display-md">Values that shape every decision</h2>
           </div>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 20 }}>
+          <div className="grid-3" style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 20 }}>
             {[
               { title: "Engineering Rigor", desc: "Every design decision is backed by structural logic, not aesthetics alone." },
               { title: "Transparent Pricing", desc: "No hidden costs. No surprise invoices. What we quote is what you pay." },

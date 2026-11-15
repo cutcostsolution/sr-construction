@@ -29,7 +29,7 @@ export default function Blogs() {
   return (
     <>
       {/* ===== HERO: MINIMAL ===== */}
-      <section ref={heroRef} className="section-dark" style={{ padding: "160px 5vw 60px" }}>
+      <section ref={heroRef} className="section-dark hero-pad-sm" style={{ padding: "160px 5vw 60px" }}>
         <div className="container blogs-hero-text" style={{ textAlign: "center", maxWidth: 800 }}>
           <span className="caption" style={{ color: "var(--accent)", display: "block", marginBottom: 16 }}>
             {page.kicker || "Insights & Guides"}
@@ -46,7 +46,7 @@ export default function Blogs() {
       {/* ===== BLOG GRID: EDITORIAL ===== */}
       <section ref={gridRef} className="section-dark section-pad" style={{ paddingTop: 40 }}>
         <div className="container">
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 24 }}>
+          <div className="grid-3" style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 24 }}>
             {(posts.data ?? []).map((post, i) => (
               <Link
                 key={post.id}

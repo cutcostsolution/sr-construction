@@ -67,7 +67,7 @@ export default function Consultation() {
               marginBottom: 32,
             }}
           >
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
+            <div className="grid-2" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
               <div><span style={{ fontSize: 11, color: "var(--text-faint)", textTransform: "uppercase", letterSpacing: "0.1em", display: "block", marginBottom: 4 }}>Name</span><span style={{ fontSize: 14, color: "var(--text)" }}>{data.name}</span></div>
               <div><span style={{ fontSize: 11, color: "var(--text-faint)", textTransform: "uppercase", letterSpacing: "0.1em", display: "block", marginBottom: 4 }}>Email</span><span style={{ fontSize: 14, color: "var(--text)" }}>{data.email}</span></div>
               <div><span style={{ fontSize: 11, color: "var(--text-faint)", textTransform: "uppercase", letterSpacing: "0.1em", display: "block", marginBottom: 4 }}>Phone</span><span style={{ fontSize: 14, color: "var(--text)" }}>{data.phone}</span></div>
@@ -166,7 +166,7 @@ export default function Consultation() {
   return (
     <>
       {/* ===== HERO ===== */}
-      <section className="section-dark" style={{ padding: "160px 5vw 60px" }}>
+      <section className="section-dark hero-pad-sm" style={{ padding: "160px 5vw 60px" }}>
         <div className="container" style={{ textAlign: "center", maxWidth: 800 }}>
           <span className="caption" style={{ color: "var(--accent)", display: "block", marginBottom: 16 }}>
             {page.kicker || "Start Your Project"}

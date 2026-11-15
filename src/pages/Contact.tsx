@@ -35,7 +35,7 @@ export default function Contact() {
   return (
     <>
       {/* ===== HERO ===== */}
-      <section className="section-dark" style={{ padding: "160px 5vw 60px" }}>
+      <section className="section-dark hero-pad-sm" style={{ padding: "160px 5vw 60px" }}>
         <div className="container" style={{ textAlign: "center", maxWidth: 700 }}>
           <span className="caption" style={{ color: "var(--accent)", display: "block", marginBottom: 16 }}>
             Contact Us
@@ -53,6 +53,7 @@ export default function Contact() {
       <section className="section-dark section-pad" style={{ paddingTop: 40 }}>
         <div className="container">
           <div
+            className="contact-split"
             style={{
               display: "grid",
               gridTemplateColumns: "0.4fr 1fr",
