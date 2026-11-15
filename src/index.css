@@ -1391,6 +1391,11 @@ h1, h2, h3, h4, h5, h6 {
   /* Hero padding reduce */
   .hero-pad { padding: 120px 5vw 80px !important; }
 
+  /* Header: switch to hamburger on tablet */
+  .desktop-nav { display: none; }
+  .mobile-toggle { display: block; }
+  .header-inner .btn-primary { display: none; }
+
   /* Grids: 2 columns on tablet */
   .grid-4 { grid-template-columns: repeat(2, 1fr) !important; }
   .grid-3 { grid-template-columns: repeat(2, 1fr) !important; }
@@ -1401,8 +1406,6 @@ h1, h2, h3, h4, h5, h6 {
 
 /* Mobile */
 @media (max-width: 768px) {
-  .desktop-nav { display: none; }
-  .mobile-toggle { display: block; }
   .footer-grid { grid-template-columns: 1fr; gap: 40px; }
   .footer-bottom { flex-direction: column; gap: 12px; text-align: center; }
   .form-grid { grid-template-columns: 1fr; }
