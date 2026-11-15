@@ -1,30 +1,49 @@
-import { useState, type FormEvent } from "react";
-import { ArrowUpRight, CheckCircle2, HardHat, Truck, Wrench, Users, TrendingUp, Award, Building2 } from "lucide-react";
-import { trpc } from "@/providers/trpc";
+import { useState } from "react";
+import { Link } from "react-router";
+import { ArrowUpRight, ArrowRight, TrendingUp, Users, Lightbulb, Handshake, Award } from "lucide-react";
 import { usePage } from "@/lib/site";
+import { trpc } from "@/providers/trpc";
 import { ConsultationCTA } from "@/components/SiteLayout";
+
+const SKILL_OPTIONS = [
+  "Architectural Design",
+  "Structural Engineering",
+  "Quantity Surveying",
+  "Project Management",
+  "MEP Engineering",
+  "Steel Fabrication",
+  "Concrete Works",
+  "Interior Design",
+  "Landscaping",
+  "Surveying",
+  "Material Supply",
+  "Other",
+];
 
 export default function Network() {
   const { page } = usePage("network");
-  const [type, setType] = useState<"artisan" | "supplier" | "consultant">("artisan");
   const [sent, setSent] = useState(false);
   const [error, setError] = useState("");
-  // CORRECTED: use networkApplication (not apply)
   const mutation = trpc.public.networkApplication.useMutation({
     onSuccess: () => setSent(true),
     onError: (err) => setError(err.message),
   });
 
-  async function submit(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
+  function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
     setError("");
-    const form = event.currentTarget;
-    const data = new FormData(form);
-    // Map frontend types to backend enum: "business" | "professional"
-    const backendType = type === "supplier" ? "business" : "professional";
-    const nameVal = String(data.get("name"));
-    const skillVal = String(data.get("skill"));
-    const messageVal = String(data.get("message"));
+    const data = new FormData(e.currentTarget);
+    const nameVal = String(data.get("name") || "").trim();
+    const skillVal = String(data.get("skill") || "").trim();
+    const messageVal = String(data.get("message") || "").trim();
+
+    if (!nameVal || !skillVal) {
+      setError("Please fill in your name and select a skill area.");
+      return;
+    }
+
+    const backendType = skillVal === "Material Supply" ? "supplier" : "artisan";
+
     mutation.mutate({
       type: backendType,
       name: nameVal,
@@ -38,209 +57,171 @@ export default function Network() {
       affiliations: "",
       website: "",
       details: "",
-      document: undefined,
     });
   }
 
-  const types = [
-    {
-      key: "artisan" as const,
-      icon: HardHat,
-      title: "Skilled Artisan",
-      desc: "Masons, carpenters, electricians, plumbers, painters and other site craftspeople who bring structures to life with precision and care.",
-    },
-    {
-      key: "supplier" as const,
-      icon: Truck,
-      title: "Material Supplier",
-      desc: "Cement, steel, sand, roofing, tiles, fixtures and other building material vendors who ensure every project has quality materials on time.",
-    },
-    {
-      key: "consultant" as const,
-      icon: Wrench,
-      title: "Technical Consultant",
-      desc: "Structural engineers, architects, surveyors, MEP engineers and specialists who provide the technical backbone for every build.",
-    },
-  ];
-
   const benefits = [
-    { icon: TrendingUp, title: "Steady Work Flow", desc: "Access to ongoing projects across residential, commercial and industrial sectors." },
-    { icon: Award, title: "Skill Development", desc: "Work alongside seasoned professionals and grow your craft through real-world experience." },
-    { icon: Users, title: "Fair Partnership", desc: "Transparent terms, prompt payment and a team that values your contribution." },
-    { icon: Building2, title: "Portfolio Growth", desc: "Build your reputation by associating with landmark projects across Nigeria." },
+    { icon: TrendingUp, title: "Steady Work Flow", body: "Get consistent project opportunities across multiple sites in Port Harcourt, Lagos, Abuja and beyond." },
+    { icon: Users, title: "Skill Development", body: "Work alongside experienced engineers and learn new techniques that grow your expertise and earning power." },
+    { icon: Handshake, title: "Fair Partnership", body: "Clear terms, timely payments and transparent communication. We treat our network as partners, not labour." },
+    { icon: Award, title: "Portfolio Growth", body: "Build your reputation by working on landmark projects that speak for your craft across Nigeria." },
   ];
 
   return (
     <>
       {/* ===== HERO ===== */}
       <section className="hero-fullbleed" style={{ minHeight: "75vh", justifyContent: "center" }}>
-        <div
-          className="hero-bg loaded"
-          style={{
-            backgroundImage: `url(${page.heroImage || "/assets/hero-building.jpg"})`,
-          }}
-        />
+        <div className="hero-bg loaded" style={{ backgroundImage: `url(${page.heroImage || "/assets/hero-building.jpg"})` }} />
         <div className="hero-overlay" />
         <div className="hero-content" style={{ textAlign: "center", paddingTop: "160px" }}>
           <span className="hero-kicker">{page.kicker || "Grow With Us"}</span>
-          <h1 className="hero-title" style={{ textAlign: "center", maxWidth: 900, margin: "0 auto 24px" }}>
-            Build Your Future<br />
-            <span className="hero-accent">With SR Construction</span>
+          <h1 className="hero-title" style={{ maxWidth: 900, margin: "0 auto 24px" }}>
+            Build your future<br />
+            <span className="hero-accent">with SR</span> Construction.
           </h1>
-          <p className="hero-body" style={{ maxWidth: 640, margin: "0 auto" }}>
+          <p className="hero-body" style={{ maxWidth: 640, margin: "0 auto 40px" }}>
             {page.body || "We believe in building people as much as we believe in building structures. Whether you are a skilled artisan, a reliable supplier or a technical expert, SR Construction is your platform to grow, earn and leave a legacy."}
           </p>
+          <div className="hero-actions" style={{ justifyContent: "center" }}>
+            <a href="#apply" className="btn btn-primary btn-lg">
+              Join the Network <ArrowDown size={18} />
+            </a>
+            <Link to="/contact" className="btn btn-outline btn-lg">
+              Contact Us <ArrowRight size={18} />
+            </Link>
+          </div>
         </div>
       </section>
 
-      {/* ===== WHY JOIN ===== */}
-      <section className="section-dark section-pad">
+      {/* ===== WHY PARTNER ===== */}
+      <section className="section-cream section-pad">
         <div className="container">
-          <div style={{ textAlign: "center", maxWidth: 600, margin: "0 auto 60px" }}>
-            <span className="caption" style={{ color: "var(--accent)", display: "block", marginBottom: 16 }}>
-              Why Partner With Us
-            </span>
-            <h2 className="display-md">More than work. A career.</h2>
-            <p className="body-lg" style={{ marginTop: 16, color: "var(--text-dim)" }}>
-              We do not just hire hands. We invest in people. Every project is an opportunity to sharpen your skills, expand your network and build a name that lasts.
-            </p>
+          <div className="section-header">
+            <span className="caption">Why Partner With Us</span>
+            <h2 className="display-md" style={{ color: "var(--ink)" }}>More than a contract. A career path.</h2>
           </div>
-          <div className="grid-4" style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 20, marginBottom: 80 }}>
+          <div className="grid-4">
             {benefits.map((b) => (
-              <div
-                key={b.title}
-                style={{
-                  padding: "clamp(28px, 3vw, 40px)",
-                  background: "var(--void-soft)",
-                  borderRadius: "var(--radius-lg)",
-                  border: "1px solid var(--line-dark)",
-                  textAlign: "left",
-                }}
-              >
-                <b.icon size={28} style={{ color: "var(--accent)", marginBottom: 20 }} />
-                <h3 className="heading-md" style={{ fontSize: 18, marginBottom: 12 }}>{b.title}</h3>
-                <p style={{ fontSize: 14, lineHeight: 1.7, color: "var(--text-dim)" }}>{b.desc}</p>
+              <div key={b.title} className="principle-card">
+                <b.icon size={28} style={{ color: "var(--accent)" }} />
+                <h3>{b.title}</h3>
+                <p>{b.body}</p>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* ===== TYPE SELECTOR ===== */}
-      <section className="section-dark section-pad" style={{ paddingTop: 0 }}>
+      {/* ===== APPLICATION FORM ===== */}
+      <section id="apply" className="section-dark section-pad">
         <div className="container">
-          <div style={{ textAlign: "center", maxWidth: 600, margin: "0 auto 60px" }}>
-            <span className="caption" style={{ color: "var(--accent)", display: "block", marginBottom: 16 }}>
-              How You Can Join
-            </span>
-            <h2 className="display-md">Three ways to partner</h2>
-          </div>
-          <div className="grid-3" style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 20, marginBottom: 80 }}>
-            {types.map((t) => (
-              <button
-                key={t.key}
-                onClick={() => { setType(t.key); setSent(false); }}
-                style={{
-                  padding: "clamp(28px, 3vw, 40px)",
-                  background: type === t.key ? "var(--void-soft)" : "var(--void)",
-                  borderRadius: "var(--radius-lg)",
-                  border: `1px solid ${type === t.key ? "var(--accent)" : "var(--line-dark)"}`,
-                  textAlign: "left",
-                  cursor: "pointer",
-                  transition: "all 0.4s ease",
-                  color: "inherit",
-                  fontFamily: "inherit",
-                }}
-                onMouseEnter={(e) => { if (type !== t.key) e.currentTarget.style.borderColor = "var(--line-accent)"; }}
-                onMouseLeave={(e) => { if (type !== t.key) e.currentTarget.style.borderColor = "var(--line-dark)"; }}
-              >
-                <t.icon size={28} style={{ color: "var(--accent)", marginBottom: 20 }} />
-                <h3 className="heading-md" style={{ fontSize: 20, marginBottom: 12 }}>{t.title}</h3>
-                <p style={{ fontSize: 14, lineHeight: 1.7, color: "var(--text-dim)" }}>{t.desc}</p>
-              </button>
-            ))}
-          </div>
-
-          {/* ===== APPLICATION FORM ===== */}
-          <div
-            style={{
-              maxWidth: 700,
-              margin: "0 auto",
-              background: "var(--void-soft)",
-              borderRadius: "var(--radius-xl)",
-              border: "1px solid var(--line-dark)",
-              padding: "clamp(32px, 5vw, 60px)",
-            }}
-          >
-            {sent ? (
-              <div style={{ textAlign: "center", padding: "40px 20px" }}>
-                <CheckCircle2 size={56} style={{ color: "var(--accent)", marginBottom: 24 }} />
-                <h2 className="heading-lg" style={{ marginBottom: 12 }}>Application Submitted</h2>
-                <p className="body-lg">
-                  Thank you for your interest. Our team will review your application and contact you within 5 business days.
-                </p>
-                <button onClick={() => setSent(false)} className="btn btn-outline" style={{ marginTop: 24 }}>
-                  Submit Another Application
-                </button>
-              </div>
-            ) : (
-              <>
-                <div style={{ textAlign: "center", marginBottom: 40 }}>
-                  <span className="caption" style={{ color: "var(--accent)", display: "block", marginBottom: 12 }}>
-                    Application Form
-                  </span>
-                  <h3 className="heading-lg">
-                    Apply as a {types.find((t) => t.key === type)?.title}
-                  </h3>
+          <div className="grid-split">
+            <div>
+              <span className="caption">Apply Now</span>
+              <h2 className="display-md" style={{ margin: "16px 0 20px" }}>
+                Tell us about<br />
+                <span className="hero-accent">your expertise.</span>
+              </h2>
+              <p className="body-lg" style={{ marginBottom: 32 }}>
+                Fill in the form and our team will review your application within 48 hours. If your skills match our current needs, we will reach out to discuss the next steps.
+              </p>
+              <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+                <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+                  <div style={{ width: 40, height: 40, borderRadius: "50%", background: "var(--accent-soft)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                    <Lightbulb size={18} style={{ color: "var(--accent)" }} />
+                  </div>
+                  <div>
+                    <strong style={{ fontSize: 14, display: "block" }}>Skill Assessment</strong>
+                    <span style={{ fontSize: 13, color: "var(--text-dim)" }}>We review your experience and portfolio</span>
+                  </div>
                 </div>
-                <form onSubmit={submit}>
+                <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+                  <div style={{ width: 40, height: 40, borderRadius: "50%", background: "var(--accent-soft)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                    <Users size={18} style={{ color: "var(--accent)" }} />
+                  </div>
+                  <div>
+                    <strong style={{ fontSize: 14, display: "block" }}>Interview & Onboarding</strong>
+                    <span style={{ fontSize: 13, color: "var(--text-dim)" }}>A conversation about fit and expectations</span>
+                  </div>
+                </div>
+                <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+                  <div style={{ width: 40, height: 40, borderRadius: "50%", background: "var(--accent-soft)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                    <Award size={18} style={{ color: "var(--accent)" }} />
+                  </div>
+                  <div>
+                    <strong style={{ fontSize: 14, display: "block" }}>First Project Assignment</strong>
+                    <span style={{ fontSize: 13, color: "var(--text-dim)" }}>Start building your portfolio with us</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div style={{ background: "var(--void-soft)", borderRadius: "var(--radius-xl)", border: "1px solid var(--line-dark)", padding: "clamp(32px, 4vw, 48px)" }}>
+              {sent ? (
+                <div className="form-success">
+                  <strong style={{ fontSize: 18, display: "block", marginBottom: 8 }}>Application Submitted</strong>
+                  <p style={{ margin: 0 }}>Thank you. We will review your details and contact you within 48 hours.</p>
+                </div>
+              ) : (
+                <form onSubmit={handleSubmit}>
+                  {error && <div className="form-error" style={{ marginBottom: 20 }}>{error}</div>}
                   <div className="form-grid">
-                    <div className="input-group">
-                      <label htmlFor="name">Full Name</label>
-                      <input id="name" name="name" type="text" placeholder="Your full name" required />
+                    <div className="form-group">
+                      <label>Full Name *</label>
+                      <input name="name" placeholder="Your full name" required />
                     </div>
-                    <div className="input-group">
-                      <label htmlFor="email">Email</label>
-                      <input id="email" name="email" type="email" placeholder="you@example.com" required />
+                    <div className="form-group">
+                      <label>Email Address *</label>
+                      <input name="email" type="email" placeholder="you@example.com" required />
                     </div>
-                    <div className="input-group">
-                      <label htmlFor="phone">Phone</label>
-                      <input id="phone" name="phone" type="tel" placeholder="+234 ..." required />
+                    <div className="form-group">
+                      <label>Phone Number *</label>
+                      <input name="phone" placeholder="+234 ..." required />
                     </div>
-                    <div className="input-group">
-                      <label htmlFor="location">Location / State</label>
-                      <input id="location" name="location" type="text" placeholder="e.g. Port Harcourt, Rivers State" required />
-                    </div>
-                    <div className="input-group">
-                      <label htmlFor="skill">Primary Skill / Trade</label>
-                      <input id="skill" name="skill" type="text" placeholder="e.g. Electrical Installation" required />
-                    </div>
-                    <div className="input-group">
-                      <label htmlFor="experience">Years of Experience</label>
-                      <input id="experience" name="experience" type="text" placeholder="e.g. 5 years" required />
-                    </div>
-                    <div className="input-group full">
-                      <label htmlFor="message">Tell us about your work</label>
-                      <textarea id="message" name="message" placeholder="Describe your experience, past projects, and what you can bring to SR Construction..." required />
+                    <div className="form-group">
+                      <label>Location *</label>
+                      <input name="location" placeholder="City, State" required />
                     </div>
                   </div>
-                  {error && <div className="form-error" style={{ marginTop: 20 }}>{error}</div>}
-                  <button
-                    type="submit"
-                    className="btn btn-primary"
-                    disabled={mutation.isPending}
-                    style={{ marginTop: 24, width: "100%", justifyContent: "center" }}
-                  >
+                  <div className="form-grid" style={{ marginTop: 20 }}>
+                    <div className="form-group">
+                      <label>Skill Area *</label>
+                      <select name="skill" required>
+                        <option value="">Select your skill</option>
+                        {SKILL_OPTIONS.map((s) => (
+                          <option key={s} value={s}>{s}</option>
+                        ))}
+                      </select>
+                    </div>
+                    <div className="form-group">
+                      <label>Years of Experience</label>
+                      <input name="experience" placeholder="e.g. 5 years" />
+                    </div>
+                  </div>
+                  <div className="form-group" style={{ marginTop: 20 }}>
+                    <label>Tell us about your work</label>
+                    <textarea name="message" rows={4} placeholder="Describe your expertise, past projects and what you bring to the table..." />
+                  </div>
+                  <button type="submit" className="btn btn-primary" style={{ width: "100%", marginTop: 24 }} disabled={mutation.isPending}>
                     {mutation.isPending ? "Submitting..." : "Submit Application"} <ArrowUpRight size={16} />
                   </button>
                 </form>
-              </>
-            )}
+              )}
+            </div>
           </div>
         </div>
       </section>
 
       <ConsultationCTA />
     </>
+  );
+}
+
+// ArrowDown icon inline
+function ArrowDown({ size = 16 }: { size?: number }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M12 5v14M19 12l-7 7-7-7" />
+    </svg>
   );
 }

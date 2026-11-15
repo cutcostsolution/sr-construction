@@ -1,210 +1,126 @@
-import { useState, type FormEvent } from "react";
-import { ArrowUpRight, CheckCircle2, Mail, MapPin, Phone } from "lucide-react";
-import { Link } from "react-router";
-import { trpc } from "@/providers/trpc";
+import { useState } from "react";
+import { MapPin, Mail, Phone, ArrowUpRight } from "lucide-react";
 import { usePage } from "@/lib/site";
+import { trpc } from "@/providers/trpc";
 
 export default function Contact() {
-  const { page, settings } = usePage("contact");
+  const { page } = usePage("contact");
   const [sent, setSent] = useState(false);
   const [error, setError] = useState("");
-  const mutation = trpc.public.enquiry.useMutation();
+  const mutation = trpc.public.contact.useMutation({
+    onSuccess: () => setSent(true),
+    onError: (err) => setError(err.message),
+  });
 
-  async function submit(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
+  function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
     setError("");
-    const form = event.currentTarget;
-    const data = new FormData(form);
-    try {
-      await mutation.mutateAsync({
-        name: String(data.get("name")),
-        email: String(data.get("email")),
-        phone: String(data.get("phone") || ""),
-        subject: String(data.get("subject")),
-        message: String(data.get("message")),
-      });
-      setSent(true);
-      form.reset();
-    } catch (e) {
-      setError(e instanceof Error ? e.message : "Your message could not be sent. Please try again.");
-    }
-  }
+    const data = new FormData(e.currentTarget);
+    const name = String(data.get("name") || "").trim();
+    const email = String(data.get("email") || "").trim();
+    const message = String(data.get("message") || "").trim();
 
-  const whatsappText = encodeURIComponent("Hello SR Construction, I would like to make an enquiry.");
+    if (!name || !email || !message) {
+      setError("Please fill in all required fields.");
+      return;
+    }
+
+    mutation.mutate({ name, email, phone: String(data.get("phone") || ""), message, subject: String(data.get("subject") || "") });
+  }
 
   return (
     <>
       {/* ===== HERO ===== */}
-      <section className="section-dark hero-pad-sm" style={{ padding: "160px 5vw 60px" }}>
-        <div className="container" style={{ textAlign: "center", maxWidth: 700 }}>
-          <span className="caption" style={{ color: "var(--accent)", display: "block", marginBottom: 16 }}>
-            Contact Us
-          </span>
-          <h1 className="display-lg" style={{ marginBottom: 20 }}>
-            {page.title || "Let's Talk"}
+      <section className="hero-fullbleed" style={{ minHeight: "60vh", justifyContent: "center" }}>
+        <div className="hero-bg loaded" style={{ backgroundImage: `url(${page.heroImage || "/assets/hero-building.jpg"})` }} />
+        <div className="hero-overlay" />
+        <div className="hero-content" style={{ textAlign: "center", paddingTop: "160px" }}>
+          <span className="hero-kicker">{page.kicker || "Get In Touch"}</span>
+          <h1 className="hero-title" style={{ maxWidth: 900, margin: "0 auto 24px" }}>
+            Let's start a<br />
+            <span className="hero-accent">conversation.</span>
           </h1>
-          <p className="body-lg" style={{ fontSize: 18 }}>
-            {page.body || "Have a project in mind? We'd love to hear about it. Reach out and we'll respond within 24 hours."}
+          <p className="hero-body" style={{ maxWidth: 560, margin: "0 auto" }}>
+            {page.body || "Whether you have a question, a project brief or just want to explore options, we are here to listen."}
           </p>
         </div>
       </section>
 
-      {/* ===== SPLIT LAYOUT ===== */}
-      <section className="section-dark section-pad" style={{ paddingTop: 40 }}>
+      {/* ===== CONTACT CONTENT ===== */}
+      <section className="section-dark section-pad">
         <div className="container">
-          <div
-            className="contact-split"
-            style={{
-              display: "grid",
-              gridTemplateColumns: "0.4fr 1fr",
-              gap: 0,
-              borderRadius: "var(--radius-xl)",
-              overflow: "hidden",
-              border: "1px solid var(--line-dark)",
-            }}
-          >
-            {/* Left: Dark Info Panel */}
-            <div
-              style={{
-                background: "var(--void-soft)",
-                padding: 60,
-                display: "flex",
-                flexDirection: "column",
-                justifyContent: "space-between",
-              }}
-            >
-              <div>
-                <h2 className="heading-lg" style={{ marginBottom: 40 }}>
-                  Get in Touch
-                </h2>
-                <div style={{ display: "flex", flexDirection: "column", gap: 24 }}>
-                  <a
-                    href={`tel:+${settings["brand.whatsapp"]}`}
-                    style={{
-                      display: "flex",
-                      alignItems: "center",
-                      gap: 16,
-                      padding: "18px 0",
-                      borderBottom: "1px solid var(--line-dark)",
-                      fontSize: 14,
-                      color: "var(--text-dim)",
-                      transition: "color 0.3s ease",
-                    }}
-                    onMouseEnter={(e) => { e.currentTarget.style.color = "var(--text)"; }}
-                    onMouseLeave={(e) => { e.currentTarget.style.color = "var(--text-dim)"; }}
-                  >
-                    <Phone size={18} style={{ color: "var(--accent)", flexShrink: 0 }} />
-                    {settings["brand.phone"]}
-                  </a>
-                  <a
-                    href={`https://wa.me/${settings["brand.whatsapp"]}?text=${whatsappText}`}
-                    target="_blank"
-                    rel="noreferrer"
-                    style={{
-                      display: "flex",
-                      alignItems: "center",
-                      gap: 16,
-                      padding: "18px 0",
-                      borderBottom: "1px solid var(--line-dark)",
-                      fontSize: 14,
-                      color: "var(--text-dim)",
-                      transition: "color 0.3s ease",
-                    }}
-                    onMouseEnter={(e) => { e.currentTarget.style.color = "var(--text)"; }}
-                    onMouseLeave={(e) => { e.currentTarget.style.color = "var(--text-dim)"; }}
-                  >
-                    <ArrowUpRight size={18} style={{ color: "var(--accent)", flexShrink: 0 }} />
-                    WhatsApp Chat
-                  </a>
-                  <a
-                    href={`mailto:${settings["brand.email"]}`}
-                    style={{
-                      display: "flex",
-                      alignItems: "center",
-                      gap: 16,
-                      padding: "18px 0",
-                      borderBottom: "1px solid var(--line-dark)",
-                      fontSize: 14,
-                      color: "var(--text-dim)",
-                      transition: "color 0.3s ease",
-                    }}
-                    onMouseEnter={(e) => { e.currentTarget.style.color = "var(--text)"; }}
-                    onMouseLeave={(e) => { e.currentTarget.style.color = "var(--text-dim)"; }}
-                  >
-                    <Mail size={18} style={{ color: "var(--accent)", flexShrink: 0 }} />
-                    {settings["brand.email"]}
-                  </a>
-                  <div
-                    style={{
-                      display: "flex",
-                      alignItems: "center",
-                      gap: 16,
-                      padding: "18px 0",
-                      fontSize: 14,
-                      color: "var(--text-dim)",
-                    }}
-                  >
-                    <MapPin size={18} style={{ color: "var(--accent)", flexShrink: 0 }} />
-                    {settings["brand.address"]}
+          <div className="grid-split">
+            <div>
+              <span className="caption">Contact Details</span>
+              <h2 className="display-md" style={{ margin: "16px 0 20px" }}>
+                Reach us directly.
+              </h2>
+              <p className="body-lg" style={{ marginBottom: 40 }}>
+                Our team responds to all enquiries within 24 hours. For urgent matters, call us directly.
+              </p>
+              <div style={{ display: "flex", flexDirection: "column", gap: 24 }}>
+                <div style={{ display: "flex", gap: 16, alignItems: "flex-start" }}>
+                  <div style={{ width: 44, height: 44, borderRadius: "50%", background: "var(--accent-soft)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                    <MapPin size={18} style={{ color: "var(--accent)" }} />
+                  </div>
+                  <div>
+                    <strong style={{ display: "block", marginBottom: 4 }}>Office Address</strong>
+                    <span style={{ color: "var(--text-dim)", fontSize: 14 }}>Bics Mall, 61 Olusegun-Obasanjo Road, Port Harcourt, Rivers State</span>
                   </div>
                 </div>
-              </div>
-              <div style={{ marginTop: 40 }}>
-                <Link to="/consultation" className="btn btn-primary" style={{ width: "100%", justifyContent: "center" }}>
-                  Book Consultation <ArrowUpRight size={16} />
-                </Link>
+                <div style={{ display: "flex", gap: 16, alignItems: "flex-start" }}>
+                  <div style={{ width: 44, height: 44, borderRadius: "50%", background: "var(--accent-soft)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                    <Mail size={18} style={{ color: "var(--accent)" }} />
+                  </div>
+                  <div>
+                    <strong style={{ display: "block", marginBottom: 4 }}>Email</strong>
+                    <span style={{ color: "var(--text-dim)", fontSize: 14 }}>info@srconstructions.ng</span>
+                  </div>
+                </div>
+                <div style={{ display: "flex", gap: 16, alignItems: "flex-start" }}>
+                  <div style={{ width: 44, height: 44, borderRadius: "50%", background: "var(--accent-soft)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                    <Phone size={18} style={{ color: "var(--accent)" }} />
+                  </div>
+                  <div>
+                    <strong style={{ display: "block", marginBottom: 4 }}>Phone</strong>
+                    <span style={{ color: "var(--text-dim)", fontSize: 14 }}>0707 112 2510</span>
+                  </div>
+                </div>
               </div>
             </div>
 
-            {/* Right: Form Panel */}
-            <div style={{ background: "var(--void)", padding: 60, borderLeft: "1px solid var(--line-dark)" }}>
+            <div style={{ background: "var(--void-soft)", borderRadius: "var(--radius-xl)", border: "1px solid var(--line-dark)", padding: "clamp(32px, 4vw, 48px)" }}>
               {sent ? (
-                <div style={{ textAlign: "center", padding: "60px 20px" }}>
-                  <CheckCircle2 size={56} style={{ color: "var(--accent)", marginBottom: 24 }} />
-                  <span className="caption" style={{ color: "var(--accent)", display: "block", marginBottom: 16 }}>
-                    Message Received
-                  </span>
-                  <h2 className="heading-lg" style={{ marginBottom: 12 }}>
-                    Thank you for contacting us.
-                  </h2>
-                  <p className="body-lg" style={{ maxWidth: 400, margin: "0 auto 32px" }}>
-                    Your message is now in our admin dashboard. Our team will review it and respond using your contact details.
-                  </p>
-                  <button onClick={() => setSent(false)} className="btn btn-outline">
-                    Send Another Message
-                  </button>
+                <div className="form-success">
+                  <strong style={{ fontSize: 18, display: "block", marginBottom: 8 }}>Message Sent</strong>
+                  <p style={{ margin: 0 }}>Thank you for reaching out. We will get back to you within 24 hours.</p>
                 </div>
               ) : (
-                <form onSubmit={submit}>
+                <form onSubmit={handleSubmit}>
+                  {error && <div className="form-error" style={{ marginBottom: 20 }}>{error}</div>}
                   <div className="form-grid">
-                    <div className="input-group">
-                      <label htmlFor="name">Full Name</label>
-                      <input id="name" name="name" type="text" placeholder="Your full name" required />
+                    <div className="form-group">
+                      <label>Full Name *</label>
+                      <input name="name" placeholder="Your name" required />
                     </div>
-                    <div className="input-group">
-                      <label htmlFor="email">Email Address</label>
-                      <input id="email" name="email" type="email" placeholder="you@example.com" required />
-                    </div>
-                    <div className="input-group">
-                      <label htmlFor="phone">Phone Number</label>
-                      <input id="phone" name="phone" type="tel" placeholder="+234 ..." />
-                    </div>
-                    <div className="input-group">
-                      <label htmlFor="subject">Subject</label>
-                      <input id="subject" name="subject" type="text" placeholder="What is this about?" required />
-                    </div>
-                    <div className="input-group full">
-                      <label htmlFor="message">Message</label>
-                      <textarea id="message" name="message" placeholder="Tell us about your project or enquiry..." required />
+                    <div className="form-group">
+                      <label>Email Address *</label>
+                      <input name="email" type="email" placeholder="you@example.com" required />
                     </div>
                   </div>
-                  {error && <div className="form-error" style={{ marginTop: 20 }}>{error}</div>}
-                  <button
-                    type="submit"
-                    className="btn btn-primary"
-                    disabled={mutation.isPending}
-                    style={{ marginTop: 24 }}
-                  >
+                  <div className="form-group" style={{ marginTop: 20 }}>
+                    <label>Phone Number</label>
+                    <input name="phone" placeholder="+234 ..." />
+                  </div>
+                  <div className="form-group" style={{ marginTop: 20 }}>
+                    <label>Subject</label>
+                    <input name="subject" placeholder="What is this about?" />
+                  </div>
+                  <div className="form-group" style={{ marginTop: 20 }}>
+                    <label>Message *</label>
+                    <textarea name="message" rows={5} placeholder="Tell us about your project or enquiry..." required />
+                  </div>
+                  <button type="submit" className="btn btn-primary" style={{ width: "100%", marginTop: 24 }} disabled={mutation.isPending}>
                     {mutation.isPending ? "Sending..." : "Send Message"} <ArrowUpRight size={16} />
                   </button>
                 </form>

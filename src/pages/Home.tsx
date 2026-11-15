@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useState } from "react";
 import { Link } from "react-router";
 import { ArrowUpRight, ArrowRight, TrendingUp, ShieldCheck, Target, Gem, HardHat, Ruler, Clock, Award } from "lucide-react";
 import { usePage } from "@/lib/site";
@@ -33,7 +33,8 @@ export default function Home() {
     <>
       {/* ===== FULL-BLEED HERO ===== */}
       <section className="hero-fullbleed">
-        <div className={`hero-bg ${heroLoaded ? "loaded" : ""}`}
+        <div
+          className={`hero-bg ${heroLoaded ? "loaded" : ""}`}
           style={{ backgroundImage: `url(${page.heroImage || "/assets/hero-building.jpg"})` }}
         />
         <img
@@ -62,22 +63,21 @@ export default function Home() {
               View Our Work <ArrowRight size={18} />
             </Link>
           </div>
-        </div>
 
-        {/* Floating stat cards */}
-        <div className="hero-stats">
-          {[
-            { icon: HardHat, value: page.statsProjects || "50+", label: "Projects Delivered" },
-            { icon: Clock, value: page.statsYears || "12+", label: "Years Building" },
-            { icon: Ruler, value: page.statsStates || "6", label: "States Covered" },
-            { icon: Award, value: page.statsTeam || "80+", label: "Field Staff" },
-          ].map((s) => (
-            <div key={s.label} className="hero-stat-card">
-              <s.icon size={22} style={{ color: "var(--accent)", marginBottom: 10 }} />
-              <strong>{s.value}</strong>
-              <span>{s.label}</span>
-            </div>
-          ))}
+          <div className="hero-stats">
+            {[
+              { icon: HardHat, value: page.statsProjects || "50+", label: "Projects Delivered" },
+              { icon: Clock, value: page.statsYears || "12+", label: "Years Building" },
+              { icon: Ruler, value: page.statsStates || "6", label: "States Covered" },
+              { icon: Award, value: page.statsTeam || "80+", label: "Field Staff" },
+            ].map((s) => (
+              <div key={s.label} className="hero-stat-card">
+                <s.icon size={22} style={{ color: "var(--accent)", marginBottom: 10 }} />
+                <strong>{s.value}</strong>
+                <span>{s.label}</span>
+              </div>
+            ))}
+          </div>
         </div>
       </section>
 
@@ -105,8 +105,8 @@ export default function Home() {
               { icon: TrendingUp, title: "Clear Communication", body: "Progress, decisions and changes are reported so clients understand what is happening and what comes next." },
             ].map((p) => (
               <div key={p.title} className="principle-card">
-                <p.icon size={28} style={{ color: "var(--accent)", marginBottom: 20 }} />
-                <h3 className="heading-md">{p.title}</h3>
+                <p.icon size={28} style={{ color: "var(--accent)" }} />
+                <h3>{p.title}</h3>
                 <p>{p.body}</p>
               </div>
             ))}
@@ -132,7 +132,7 @@ export default function Home() {
                 </div>
                 <div className="service-body">
                   <span className="service-category">{s.category}</span>
-                  <h3 className="heading-md">{s.name}</h3>
+                  <h3>{s.name}</h3>
                   <p>{s.summary}</p>
                 </div>
               </Link>
@@ -156,7 +156,7 @@ export default function Home() {
               <Link
                 key={p.id}
                 to={`/projects/${p.slug}`}
-                className={`project-reveal project-item ${i === 0 ? "project-featured" : ""}`}
+                className={`project-item ${i === 0 ? "project-featured" : ""}`}
               >
                 <img src={p.image || "/assets/hero-structure.jpg"} alt={p.title} onError={imgFallback} />
                 <div className="project-info">
@@ -173,7 +173,7 @@ export default function Home() {
       {/* ===== FOUNDER TEASER (CREAM) ===== */}
       <section className="section-cream section-pad">
         <div className="container">
-          <div className="grid-asym founder-teaser">
+          <div className="founder-teaser">
             <div className="founder-img">
               <img src="/assets/founder.jpg" alt="Emmanuel Andrew Nwosu" onError={imgFallback} />
               <div className="founder-badge">
