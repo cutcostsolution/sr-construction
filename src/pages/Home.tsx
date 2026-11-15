@@ -1,5 +1,5 @@
 import { useEffect, useRef } from "react";
-import { Link } from "react-router-dom";
+import { Link } from "react-router";
 import { ArrowUpRight, TrendingUp, ShieldCheck, Target, Gem } from "lucide-react";
 import { usePage } from "@/lib/site";
 import { trpc } from "@/providers/trpc";

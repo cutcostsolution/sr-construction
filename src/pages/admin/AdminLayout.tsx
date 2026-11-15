@@ -45,18 +45,18 @@ export default function AdminLayout() {
     setNotificationsOpen(false); navigate(target); utils.admin.notifications.invalidate();
   }
 
-  return <div className="admin-layout">
-    {/* Sidebar */}
-    <aside className="admin-sidebar">
+  const sidebarContent = (
+    <>
       <div className="admin-sidebar-head">
         <strong>SR CONSTRUCTION</strong>
         <small>Admin Workspace</small>
       </div>
       <nav>
         {links.map(([path, text, Icon]) => (
-          <NavLink key={path as string} to={path as string} end={path === "/admin"}>
+          <NavLink key={path as string} to={path as string} end={path === "/admin"} onClick={() => setMenu(false)}>
             <Icon size={18} />
             <span>{text as string}</span>
+            <ChevronRight size={14} style={{ marginLeft: "auto", opacity: 0.4 }} />
           </NavLink>
         ))}
       </nav>
@@ -66,12 +66,32 @@ export default function AdminLayout() {
           <LogOut size={16} /> Sign Out
         </button>
       </div>
+    </>
+  );
+
+  return <div className="admin-layout">
+    {/* Desktop Sidebar */}
+    <aside className="admin-sidebar desktop-only">
+      {sidebarContent}
     </aside>
+
+    {/* Mobile Sidebar Overlay */}
+    {menu && (
+      <>
+        <div className="admin-mobile-backdrop" onClick={() => setMenu(false)} />
+        <aside className="admin-sidebar mobile-only">
+          <button onClick={() => setMenu(false)} style={{ position: "absolute", top: 16, right: 16, background: "none", border: "none", color: "var(--text)", cursor: "pointer", zIndex: 10 }}>
+            <X size={24} />
+          </button>
+          {sidebarContent}
+        </aside>
+      </>
+    )}
 
     {/* Main */}
     <div>
       <header className="admin-topbar">
-        <button onClick={() => setMenu(!menu)} style={{ background: "none", border: "none", cursor: "pointer", marginRight: 16 }}><Menu size={20} /></button>
+        <button onClick={() => setMenu(!menu)} className="admin-menu-toggle"><Menu size={20} /></button>
         <div style={{ flex: 1 }}>
           <span style={{ fontSize: 11, textTransform: "uppercase", letterSpacing: ".1em", color: "var(--muted)" }}>SR Construction</span>
           <strong style={{ display: "block", fontSize: 14, color: "var(--ink)" }}>Admin Dashboard</strong>

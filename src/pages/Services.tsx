@@ -94,7 +94,7 @@ export default function Services() {
               >
                 <div style={{ overflow: "hidden", height: 280 }}>
                   <img
-                    src={s.coverImage || `/assets/service-${["foundation", "concrete", "steel", "drainage", "turf"][i % 5]}.jpg`}
+                    src={s.image || [`/assets/service-foundation.jpg`,`/assets/service-concrete.jpg`,`/assets/service-steel.webp`,`/assets/service-drainage.webp`,`/assets/service-turf.jpg`][i % 5]}
                     alt={s.name}
                     style={{
                       width: "100%",
@@ -102,6 +102,7 @@ export default function Services() {
                       objectFit: "cover",
                       transition: "transform 0.6s cubic-bezier(0.4, 0, 0.2, 1)",
                     }}
+                    onError={(e) => { (e.target as HTMLImageElement).src = "/assets/hero-structure.jpg"; }}
                     onMouseEnter={(e) => { (e.target as HTMLElement).style.transform = "scale(1.05)"; }}
                     onMouseLeave={(e) => { (e.target as HTMLElement).style.transform = "scale(1)"; }}
                   />
