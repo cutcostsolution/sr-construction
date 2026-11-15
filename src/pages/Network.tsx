@@ -87,7 +87,7 @@ export default function Network() {
           style={{
             position: "absolute",
             inset: 0,
-            backgroundImage: "url(/assets/hero-workers.jpg)",
+            backgroundImage: "url(/assets/hero-building.jpg)",
             backgroundSize: "cover",
             backgroundPosition: "center",
             opacity: 0.3,

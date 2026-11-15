@@ -12,12 +12,18 @@ gsap.registerPlugin(ScrollTrigger);
 export default function Projects() {
   const { page } = usePage("projects");
   const projects = trpc.public.projects.useQuery();
+  const fallbackProjects = [
+    { id: 1, slug: "twin-residential-apartments-port-harcourt", title: "Twin 2-Storey Residential Apartments", category: "Residential", location: "Sars Road, Port Harcourt", image: "/assets/project-apartments-wide.webp", status: "completed", gallery: [] },
+    { id: 2, slug: "executive-luxury-duplex", title: "Executive 6-Bedroom Luxury Duplex", category: "Residential", location: "Port Harcourt & Delta State", image: "/assets/project-duplex-complete.webp", status: "completed", gallery: [] },
+    { id: 3, slug: "hospitality-complex-asaba", title: "Hospitality & Recreational Development", category: "Hospitality & Recreation", location: "Asaba, Delta State", image: "/assets/project-asaba.webp", status: "completed", gallery: [] },
+  ];
+  const displayProjects = projects.data?.length ? projects.data : fallbackProjects;
   const [filter, setFilter] = useState("All");
   const heroRef = useRef<HTMLDivElement>(null);
   const gridRef = useRef<HTMLDivElement>(null);
 
-  const categories = ["All", ...(projects.data ? [...new Set(projects.data.map((p) => p.category))] : [])];
-  const filtered = filter === "All" ? (projects.data ?? []) : (projects.data ?? []).filter((p) => p.category === filter);
+  const categories = ["All", ...(displayProjects ? [...new Set(displayProjects.map((p) => p.category))] : [])];
+  const filtered = filter === "All" ? displayProjects : displayProjects.filter((p) => p.category === filter);
 
   useEffect(() => {
     const ctx = gsap.context(() => {
@@ -73,7 +79,7 @@ export default function Projects() {
                 }}
               >
                 <strong style={{ fontFamily: "var(--font-display)", fontSize: 32, color: "var(--text)", display: "block" }}>
-                  {projects.data?.length || 0}
+                  {displayProjects.length}
                 </strong>
                 <span style={{ fontSize: 12, color: "var(--text-dim)", textTransform: "uppercase", letterSpacing: "0.1em" }}>
                   Projects
@@ -153,7 +159,7 @@ export default function Projects() {
                 }}
               >
                 <img
-                  src={p.coverImage || "/assets/project-duplex.webp"}
+                  src={p.image || "/assets/project-duplex-complete.webp"}
                   alt={p.title}
                   style={{
                     width: "100%",
@@ -188,9 +194,9 @@ export default function Projects() {
                     >
                       {p.category}
                     </span>
-                    {p.galleryCount > 0 && (
+                    {(p.gallery?.length || 0) > 0 && (
                       <span style={{ display: "flex", alignItems: "center", gap: 4, fontSize: 11, color: "var(--text-faint)" }}>
-                        <Image size={12} /> {p.galleryCount}
+                        <Image size={12} /> {p.gallery.length}
                       </span>
                     )}
                   </div>
@@ -214,7 +220,7 @@ export default function Projects() {
                         fontSize: 10,
                         textTransform: "uppercase",
                         letterSpacing: "0.08em",
-                        color: p.status === "Completed" ? "var(--gold)" : "var(--accent)",
+                        color: p.status === "completed" ? "var(--gold)" : "var(--accent)",
                       }}
                     >
                       {p.status}

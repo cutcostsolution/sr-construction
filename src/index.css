@@ -1493,12 +1493,20 @@ img {
 .principle-card,
 .about-value-card,
 .service-reveal,
+.service-card,
 .project-reveal,
+.project-item,
 .founder-reveal,
+.founder-value,
+.founder-hero-text,
+.founder-hero-img,
+.founder-story-block,
 .metric-reveal,
 .process-step,
 .blog-card,
-.values-grid-card {
+.values-grid-card,
+.services-hero-text,
+.projects-hero-text {
   opacity: 1 !important;
   transform: none !important;
 }

@@ -12,6 +12,15 @@ gsap.registerPlugin(ScrollTrigger);
 export default function Services() {
   const { page } = usePage("services");
   const services = trpc.public.services.useQuery();
+  const fallbackServices = [
+    { id: 1, slug: "design-build-construction", category: "Full-Cycle Delivery", name: "Design & Build Construction", image: "/assets/hero-duplex.jpg", summary: "Architecture, engineering and construction coordinated under one accountable team." },
+    { id: 2, slug: "structural-steel-roof-trusses", category: "Structural Engineering", name: "Structural Steel & Roof Trusses", image: "/assets/service-steel.webp", summary: "In-house steel fabrication for roof trusses, frames, balustrades and gatehouses." },
+    { id: 3, slug: "reinforced-concrete-superstructure", category: "Structural Engineering", name: "Reinforced Concrete & Superstructure", image: "/assets/service-concrete.jpg", summary: "Precise formwork, reinforcement, columns, beams and suspended concrete slabs." },
+    { id: 4, slug: "foundations-ground-engineering", category: "Civil Works", name: "Foundations & Ground Engineering", image: "/assets/service-foundation.jpg", summary: "Ground beams, raft foundations, retaining walls and difficult-site stabilisation." },
+    { id: 5, slug: "drainage-paving-perimeter-works", category: "Infrastructure", name: "Drainage, Paving & Perimeter Works", image: "/assets/service-drainage.webp", summary: "Practical external works that protect the property and complete the site." },
+    { id: 6, slug: "sports-turf-facility-construction", category: "Specialist Construction", name: "Sports Turf & Facility Construction", image: "/assets/service-turf.jpg", summary: "Sports grounds delivered from sub-base civil works to turf and facility setup." },
+  ];
+  const displayServices = services.data?.length ? services.data : fallbackServices;
   const heroRef = useRef<HTMLDivElement>(null);
   const gridRef = useRef<HTMLDivElement>(null);
   const processRef = useRef<HTMLDivElement>(null);
@@ -70,7 +79,7 @@ export default function Services() {
       <section ref={gridRef} className="section-dark section-pad" style={{ paddingTop: 0 }}>
         <div className="container">
           <div className="grid-2" style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 20 }}>
-            {(services.data ?? []).map((s, i) => (
+            {displayServices.map((s, i) => (
               <Link
                 key={s.id}
                 to={`/services/${s.slug}`}

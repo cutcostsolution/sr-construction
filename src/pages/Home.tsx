@@ -15,6 +15,20 @@ export default function Home() {
   const servicesQ = trpc.public.services.useQuery();
   const projectsQ = trpc.public.projects.useQuery({ limit: 3 });
 
+  const fallbackServices = [
+    { id: 1, slug: "design-build-construction", category: "Full-Cycle Delivery", name: "Design & Build Construction", image: "/assets/hero-duplex.jpg", summary: "Architecture, engineering and construction coordinated under one accountable team." },
+    { id: 2, slug: "structural-steel-roof-trusses", category: "Structural Engineering", name: "Structural Steel & Roof Trusses", image: "/assets/service-steel.webp", summary: "In-house steel fabrication for roof trusses, frames, balustrades and gatehouses." },
+    { id: 3, slug: "reinforced-concrete-superstructure", category: "Structural Engineering", name: "Reinforced Concrete & Superstructure", image: "/assets/service-concrete.jpg", summary: "Precise formwork, reinforcement, columns, beams and suspended concrete slabs." },
+    { id: 4, slug: "foundations-ground-engineering", category: "Civil Works", name: "Foundations & Ground Engineering", image: "/assets/service-foundation.jpg", summary: "Ground beams, raft foundations, retaining walls and difficult-site stabilisation." },
+  ];
+  const fallbackProjects = [
+    { id: 1, slug: "twin-residential-apartments-port-harcourt", title: "Twin 2-Storey Residential Apartments", category: "Residential", location: "Sars Road, Port Harcourt", image: "/assets/project-apartments-wide.webp", status: "completed" },
+    { id: 2, slug: "executive-luxury-duplex", title: "Executive 6-Bedroom Luxury Duplex", category: "Residential", location: "Port Harcourt & Delta State", image: "/assets/project-duplex-complete.webp", status: "completed" },
+    { id: 3, slug: "hospitality-complex-asaba", title: "Hospitality & Recreational Development", category: "Hospitality & Recreation", location: "Asaba, Delta State", image: "/assets/project-asaba.webp", status: "completed" },
+  ];
+  const displayServices = (servicesQ.data?.length ? servicesQ.data : fallbackServices).slice(0, 4);
+  const displayProjects = (projectsQ.data?.length ? projectsQ.data : fallbackProjects).slice(0, 3);
+
   useEffect(() => {
     const el = heroRef.current;
     if (!el) return;
@@ -147,7 +161,7 @@ export default function Home() {
             <Link to="/services" className="btn btn-outline">All Services <ArrowUpRight size={16} /></Link>
           </div>
           <div className="grid-2" style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 20 }}>
-            {(servicesQ.data ?? []).slice(0, 4).map((s) => (
+            {displayServices.map((s) => (
               <Link key={s.id} to={`/services/${s.slug}`} className="service-reveal" style={{
                 display: "block", background: "var(--void-soft)", borderRadius: "var(--radius-lg)", border: "1px solid var(--line-dark)", overflow: "hidden",
                 textDecoration: "none", color: "inherit", transition: "all 0.4s ease",
@@ -177,7 +191,7 @@ export default function Home() {
             <Link to="/projects" className="btn btn-outline">All Projects <ArrowUpRight size={16} /></Link>
           </div>
           <div className="grid-3 project-grid" style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 24 }}>
-            {(projectsQ.data ?? []).slice(0, 3).map((p, i) => (
+            {displayProjects.map((p, i) => (
               <Link key={p.id} to={`/projects/${p.slug}`} className="project-reveal" style={{
                 display: "block", position: "relative", borderRadius: "var(--radius-lg)", overflow: "hidden", border: "1px solid var(--line-dark)",
                 textDecoration: "none", color: "inherit",
