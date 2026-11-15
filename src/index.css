@@ -1462,6 +1462,20 @@ img {
   height: auto;
 }
 
+/* ===== GSAP FALLBACK: ensure content is visible even if animations fail ===== */
+.principle-card,
+.about-value-card,
+.service-reveal,
+.project-reveal,
+.founder-reveal,
+.metric-reveal,
+.process-step,
+.blog-card,
+.values-grid-card {
+  opacity: 1 !important;
+  transform: none !important;
+}
+
 /* ===== MOBILE SCROLL FIX ===== */
 @media (max-width: 768px) {
   html, body { overflow-x: hidden; }

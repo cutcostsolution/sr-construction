@@ -35,10 +35,10 @@ export default function Network() {
       category: skillVal,
       servicesOffered: messageVal.length >= 5 ? messageVal : `${skillVal} services`,
       experience: String(data.get("experience") || ""),
-      affiliations: null,
-      website: null,
-      details: null,
-      document: null,
+      affiliations: "",
+      website: "",
+      details: "",
+      document: undefined,
     });
   }
 

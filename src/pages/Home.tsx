@@ -1,241 +1,135 @@
 import { useEffect, useRef } from "react";
-import { Link } from "react-router";
-import { ArrowUpRight, ArrowRight, Shield, Clock, Lightbulb, Award, TrendingUp, Users, Building, HardHat, Check } from "lucide-react";
-import gsap from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { trpc } from "@/providers/trpc";
+import { Link } from "react-router-dom";
+import { ArrowUpRight, TrendingUp, ShieldCheck, Target, Gem } from "lucide-react";
 import { usePage } from "@/lib/site";
+import { trpc } from "@/providers/trpc";
 import { ConsultationCTA } from "@/components/SiteLayout";
 
-gsap.registerPlugin(ScrollTrigger);
+function imgFallback(e: React.SyntheticEvent<HTMLImageElement>) {
+  (e.target as HTMLImageElement).src = "/assets/hero-structure.jpg";
+}
 
 export default function Home() {
   const { page } = usePage("home");
-  const services = trpc.public.services.useQuery();
-  const projects = trpc.public.projects.useQuery();
-  const founder = usePage("founder").page;
-
-  const heroRef = useRef<HTMLDivElement>(null);
-  const principlesRef = useRef<HTMLDivElement>(null);
-  const servicesRef = useRef<HTMLDivElement>(null);
-  const projectsRef = useRef<HTMLDivElement>(null);
-  const founderRef = useRef<HTMLDivElement>(null);
-  const metricsRef = useRef<HTMLDivElement>(null);
+  const heroRef = useRef<HTMLElement>(null);
+  const servicesQ = trpc.public.services.useQuery();
+  const projectsQ = trpc.public.projects.useQuery({ limit: 3 });
 
   useEffect(() => {
-    const ctx = gsap.context(() => {
-      // Hero entrance
-      gsap.from(".hero-title", { y: 60, opacity: 0, duration: 1.2, ease: "power3.out", delay: 0.2 });
-      gsap.from(".hero-body", { y: 40, opacity: 0, duration: 1, ease: "power3.out", delay: 0.5 });
-      gsap.from(".hero-actions", { y: 30, opacity: 0, duration: 0.8, ease: "power3.out", delay: 0.8 });
-      gsap.from(".hero-stats-panel", { x: 60, opacity: 0, duration: 1, ease: "power3.out", delay: 0.6 });
-
-      // Principles stagger
-      gsap.from(".principle-card", {
-        y: 50, opacity: 0, duration: 0.8, stagger: 0.12, ease: "power3.out",
-        scrollTrigger: { trigger: principlesRef.current, start: "top 80%" },
-      });
-
-      // Services
-      gsap.from(".service-reveal", {
-        y: 40, opacity: 0, duration: 0.8, stagger: 0.1, ease: "power3.out",
-        scrollTrigger: { trigger: servicesRef.current, start: "top 80%" },
-      });
-
-      // Projects
-      gsap.from(".project-reveal", {
-        y: 50, opacity: 0, duration: 0.9, stagger: 0.15, ease: "power3.out",
-        scrollTrigger: { trigger: projectsRef.current, start: "top 80%" },
-      });
-
-      // Founder
-      gsap.from(".founder-reveal", {
-        y: 40, opacity: 0, duration: 1, stagger: 0.2, ease: "power3.out",
-        scrollTrigger: { trigger: founderRef.current, start: "top 80%" },
-      });
-
-      // Metrics
-      gsap.from(".metric-reveal", {
-        y: 30, opacity: 0, duration: 0.7, stagger: 0.1, ease: "power3.out",
-        scrollTrigger: { trigger: metricsRef.current, start: "top 85%" },
-      });
-    });
-
-    return () => ctx.revert();
+    const el = heroRef.current;
+    if (!el) return;
+    const handleScroll = () => {
+      const y = window.scrollY;
+      const bg = el.querySelector(".hero-bg") as HTMLElement;
+      if (bg) bg.style.transform = `translateY(${y * 0.3}px) scale(1.05)`;
+    };
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
   }, []);
+
+  const principles = [
+    { icon: ShieldCheck, title: "Structural Integrity", body: "Every joint, pour and connection is executed to engineering specification with clear inspection records." },
+    { icon: Target, title: "Delivery Discipline", body: "Milestones, materials and communication are tracked so projects stay coordinated and avoid avoidable surprises." },
+    { icon: Gem, title: "Material Quality", body: "We source and verify concrete grades, reinforcement standards and finishing materials before they reach the site." },
+    { icon: TrendingUp, title: "Clear Communication", body: "Progress, decisions and changes are reported so clients understand what is happening, why and what comes next." },
+  ];
 
   return (
     <>
-      {/* ===== HERO: CINEMATIC FULL-BLEED ===== */}
-      <section
-        ref={heroRef}
-        style={{
-          minHeight: "100vh",
-          display: "flex",
-          alignItems: "center",
-          position: "relative",
-          overflow: "hidden",
-          background: "var(--void)",
-        }}
-      >
-        {/* Background image with overlay */}
-        <div
-          style={{
-            position: "absolute",
-            inset: 0,
-            backgroundImage: "url(/assets/hero-building.jpg)",
-            backgroundSize: "cover",
-            backgroundPosition: "center",
-            opacity: 0.35,
-          }}
-        />
-        <div
-          style={{
-            position: "absolute",
-            inset: 0,
-            background: "linear-gradient(180deg, rgba(10,10,15,0.4) 0%, rgba(10,10,15,0.85) 70%, var(--void) 100%)",
-          }}
-        />
-
+      {/* ===== HERO ===== */}
+      <section ref={heroRef} style={{ minHeight: "100vh", position: "relative", overflow: "hidden" }}>
+        <div className="hero-bg" style={{
+          position: "absolute", inset: 0,
+          backgroundImage: `url(${page.heroImage || "/assets/hero-duplex.jpg"})`,
+          backgroundSize: "cover", backgroundPosition: "center",
+          transform: "scale(1.05)",
+        }} />
+        <div style={{ position: "absolute", inset: 0, background: "linear-gradient(135deg, rgba(10,10,15,0.88) 0%, rgba(10,10,15,0.5) 100%)" }} />
         <div className="container hero-pad" style={{ position: "relative", zIndex: 2, padding: "140px 5vw 100px" }}>
           <div className="grid-split" style={{ display: "grid", gridTemplateColumns: "1.3fr 0.7fr", gap: 80, alignItems: "center" }}>
             <div>
-              <span className="caption" style={{ color: "var(--accent)", display: "block", marginBottom: 24 }}>
-                {page.kicker || "Nigerian Construction Excellence"}
+              <span className="caption" style={{ color: "var(--accent)", display: "block", marginBottom: 20 }}>
+                {page.kicker || "Full-cycle construction · Across Nigeria"}
               </span>
-              <h1 className="display-xl hero-title" style={{ marginBottom: 32, maxWidth: 900 }}>
-                {page.title || "Structures That Stand the Test of Time"}
+              <h1 className="display-xl" style={{ marginBottom: 24, lineHeight: 1.05 }}>
+                {page.title || "We build with certainty."}
               </h1>
-              <p className="body-lg hero-body" style={{ maxWidth: 520, marginBottom: 40, fontSize: 18 }}>
-                {page.body || "Full-cycle construction from structural engineering to final handover. Built with precision, delivered with accountability."}
+              <p className="body-lg" style={{ fontSize: 18, marginBottom: 36, maxWidth: 560, color: "var(--text-dim)" }}>
+                {page.body || "From the first drawing to the final handover, SR Construction brings engineering, site execution and accountable project delivery into one clear process."}
               </p>
-              <div className="hero-actions" style={{ display: "flex", gap: 16, flexWrap: "wrap" }}>
+              <div style={{ display: "flex", gap: 16, flexWrap: "wrap" }}>
                 <Link to="/consultation" className="btn btn-primary">
-                  Book Your Consultation <ArrowUpRight size={16} />
+                  Book a Consultation <ArrowUpRight size={16} />
                 </Link>
                 <Link to="/projects" className="btn btn-outline">
-                  Explore Our Work <ArrowRight size={16} />
+                  See Our Work <ArrowUpRight size={16} />
                 </Link>
               </div>
             </div>
-
             <div
-              className="hero-stats-panel"
               style={{
-                background: "rgba(17,17,24,0.8)",
+                background: "rgba(245,240,232,0.06)",
                 backdropFilter: "blur(20px)",
-                border: "1px solid var(--line-dark)",
+                WebkitBackdropFilter: "blur(20px)",
+                border: "1px solid rgba(245,240,232,0.12)",
                 borderRadius: "var(--radius-xl)",
-                padding: 48,
+                padding: "clamp(32px, 4vw, 48px)",
               }}
             >
-              <span className="caption" style={{ color: "var(--gold)", display: "block", marginBottom: 24 }}>
-                Track Record
-              </span>
-              <ul style={{ listStyle: "none", padding: 0, margin: 0, display: "flex", flexDirection: "column", gap: 18 }}>
+              <p className="caption" style={{ color: "var(--accent)", marginBottom: 16 }}>Quick Snapshot</p>
+              <div className="grid-2" style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 20 }}>
                 {[
-                  "12+ years in Nigerian construction",
-                  "50+ completed projects",
-                  "Lagos, Abuja, Port Harcourt",
-                  "Structural, architectural, finishing",
-                  "Supervised execution every stage",
-                ].map((item) => (
-                  <li key={item} style={{ display: "flex", alignItems: "center", gap: 14, fontSize: 14, color: "var(--text-dim)" }}>
-                    <Check size={16} style={{ color: "var(--accent)", flexShrink: 0 }} />
-                    {item}
-                  </li>
+                  { label: "Projects Delivered", value: page.statsProjects || "50+" },
+                  { label: "Years Building", value: page.statsYears || "12+" },
+                  { label: "States Covered", value: page.statsStates || "6" },
+                  { label: "Field Staff", value: page.statsTeam || "80+" },
+                ].map((s) => (
+                  <div key={s.label}>
+                    <strong className="stat-number" style={{ fontFamily: "var(--font-display)", fontSize: 32, color: "var(--text)", display: "block" }}>{s.value}</strong>
+                    <span style={{ fontSize: 11, color: "var(--text-faint)", textTransform: "uppercase", letterSpacing: "0.08em" }}>{s.label}</span>
+                  </div>
                 ))}
-              </ul>
-              <div style={{ marginTop: 32, paddingTop: 24, borderTop: "1px solid var(--line-dark)" }}>
-                <div style={{ display: "flex", gap: 32 }}>
-                  <div>
-                    <strong className="stat-number" style={{ fontFamily: "var(--font-display)", fontSize: 32, color: "var(--text)", display: "block" }}>50+</strong>
-                    <span style={{ fontSize: 12, color: "var(--text-faint)", textTransform: "uppercase", letterSpacing: "0.1em" }}>Projects</span>
-                  </div>
-                  <div>
-                    <strong className="stat-number" style={{ fontFamily: "var(--font-display)", fontSize: 32, color: "var(--text)", display: "block" }}>12+</strong>
-                    <span style={{ fontSize: 12, color: "var(--text-faint)", textTransform: "uppercase", letterSpacing: "0.1em" }}>Years</span>
-                  </div>
-                </div>
               </div>
             </div>
           </div>
         </div>
-
-        {/* Scroll indicator */}
-        <div
-          style={{
-            position: "absolute",
-            bottom: 40,
-            left: "50%",
-            transform: "translateX(-50%)",
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-            gap: 8,
-            opacity: 0.4,
-          }}
-        >
-          <span style={{ fontSize: 10, textTransform: "uppercase", letterSpacing: "0.2em" }}>Scroll</span>
-          <div style={{ width: 1, height: 40, background: "linear-gradient(to bottom, var(--text-faint), transparent)" }} />
-        </div>
       </section>
 
-      {/* ===== MARQUEE STRIP ===== */}
-      <div style={{ background: "var(--void-soft)", borderTop: "1px solid var(--line-dark)", borderBottom: "1px solid var(--line-dark)", padding: "20px 0", overflow: "hidden", whiteSpace: "nowrap" }}>
-        <div style={{ display: "inline-block", animation: "marquee 30s linear infinite" }}>
-          {["Structural Engineering", "Architectural Design", "Project Management", "Interior Fit-Out", "Renovation & Restoration", "Building Materials Supply", "Site Supervision", "Quality Assurance"].map((t) => (
-            <span key={t} style={{ fontSize: 12, textTransform: "uppercase", letterSpacing: "0.2em", fontWeight: 500, color: "var(--text-faint)", padding: "0 50px" }}>
-              {t}
-            </span>
-          ))}
-          {["Structural Engineering", "Architectural Design", "Project Management", "Interior Fit-Out", "Renovation & Restoration", "Building Materials Supply", "Site Supervision", "Quality Assurance"].map((t) => (
-            <span key={`dup-${t}`} style={{ fontSize: 12, textTransform: "uppercase", letterSpacing: "0.2em", fontWeight: 500, color: "var(--text-faint)", padding: "0 50px" }}>
-              {t}
-            </span>
+      {/* ===== MARQUEE ===== */}
+      <div style={{ background: "var(--void)", borderTop: "1px solid var(--line-dark)", borderBottom: "1px solid var(--line-dark)", padding: "16px 0", overflow: "hidden" }}>
+        <div className="marquee-track" style={{ display: "flex", gap: 48, whiteSpace: "nowrap" }}>
+          {["STRUCTURAL ENGINEERING", "DESIGN & BUILD", "CONCRETE & SUPERSTRUCTURE", "STEEL FABRICATION", "FOUNDATIONS", "DRAINAGE & PAVING", "PROJECT MANAGEMENT", "QUALITY CONTROL"].map((t) => (
+            <span key={t} style={{ fontSize: 11, color: "var(--text-faint)", textTransform: "uppercase", letterSpacing: "0.2em", fontWeight: 500 }}>{t}</span>
           ))}
         </div>
       </div>
 
       {/* ===== PRINCIPLES ===== */}
-      <section ref={principlesRef} className="section-dark section-pad">
+      <section className="section-cream section-pad" style={{ background: "var(--cream)" }}>
         <div className="container">
-          <div style={{ maxWidth: 600, marginBottom: 80 }}>
+          <div style={{ textAlign: "center", maxWidth: 600, margin: "0 auto 60px" }}>
             <span className="caption" style={{ color: "var(--accent)", display: "block", marginBottom: 16 }}>
-              The SR Standard
+              {page.principlesKicker || "The SR Standard"}
             </span>
-            <h2 className="display-md">Built on four principles</h2>
-            <span className="accent-line" style={{ marginTop: 24 }} />
+            <h2 className="display-md" style={{ color: "var(--ink)" }}>
+              {page.principlesTitle || "Built on four principles"}
+            </h2>
           </div>
-          <div className="grid-4" style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 24 }}>
-            {[
-              { icon: Shield, title: "Quality", desc: "The right materials, sound technical decisions and careful execution at every stage." },
-              { icon: Clock, title: "Speed", desc: "Clear coordination keeps people, decisions and site work moving forward." },
-              { icon: Lightbulb, title: "Innovation", desc: "Practical methods and visible records improve the building experience." },
-              { icon: Award, title: "High Standards", desc: "Every stage checked against the agreed scope, finish and timeline." },
-            ].map((p) => (
+          <div className="grid-4" style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 20 }}>
+            {principles.map((p) => (
               <div
                 key={p.title}
-                className="principle-card"
                 style={{
-                  padding: 40,
-                  background: "var(--void-soft)",
+                  padding: "clamp(28px, 3vw, 40px)",
+                  background: "var(--warm-white)",
                   borderRadius: "var(--radius-lg)",
-                  border: "1px solid var(--line-dark)",
-                  transition: "all 0.4s cubic-bezier(0.4, 0, 0.2, 1)",
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.borderColor = "var(--line-accent)";
-                  e.currentTarget.style.transform = "translateY(-6px)";
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.borderColor = "var(--line-dark)";
-                  e.currentTarget.style.transform = "translateY(0)";
+                  border: "1px solid var(--line)",
+                  textAlign: "left",
                 }}
               >
-                <p.icon size={28} style={{ color: "var(--accent)", marginBottom: 24 }} />
-                <h3 className="heading-md" style={{ marginBottom: 12, fontSize: 20 }}>{p.title}</h3>
-                <p style={{ fontSize: 14, lineHeight: 1.7, color: "var(--text-dim)" }}>{p.desc}</p>
+                <p.icon size={28} style={{ color: "var(--accent)", marginBottom: 20 }} />
+                <h3 className="heading-md" style={{ fontSize: 18, marginBottom: 12, color: "var(--ink)" }}>{p.title}</h3>
+                <p style={{ fontSize: 14, lineHeight: 1.7, color: "var(--stone)" }}>{p.body}</p>
               </div>
             ))}
           </div>
@@ -243,124 +137,59 @@ export default function Home() {
       </section>
 
       {/* ===== SERVICES PREVIEW ===== */}
-      <section ref={servicesRef} className="section-cream section-pad">
+      <section className="section-dark section-pad">
         <div className="container">
-          <div className="grid-split" style={{ display: "grid", gridTemplateColumns: "0.4fr 1fr", gap: 80, alignItems: "start" }}>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", marginBottom: 48, flexWrap: "wrap", gap: 16 }}>
             <div>
-              <span className="caption" style={{ color: "var(--accent)", display: "block", marginBottom: 16 }}>
-                What We Do
-              </span>
-              <h2 className="display-md" style={{ color: "var(--text-dark)", marginBottom: 24 }}>
-                Specialist capability.
-              </h2>
-              <p className="body-lg" style={{ color: "var(--text-dark-dim)", marginBottom: 32 }}>
-                From structural work to complete project delivery, every service is shaped around the actual demands of your site.
-              </p>
-              <Link to="/services" className="btn btn-accent">
-                All Services <ArrowUpRight size={16} />
-              </Link>
+              <span className="caption" style={{ color: "var(--accent)", display: "block", marginBottom: 16 }}>What We Do</span>
+              <h2 className="display-md">Built properly from the ground up.</h2>
             </div>
-            <div className="grid-2" style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 20 }}>
-              {(services.data ?? []).slice(0, 4).map((s) => (
-                <div
-                  key={s.id}
-                  className="service-reveal"
-                  style={{
-                    padding: 36,
-                    background: "var(--cream-warm)",
-                    borderRadius: "var(--radius-lg)",
-                    border: "1px solid var(--line-light)",
-                    transition: "all 0.4s cubic-bezier(0.4, 0, 0.2, 1)",
-                  }}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.borderColor = "var(--accent)";
-                    e.currentTarget.style.transform = "translateY(-4px)";
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.borderColor = "var(--line-light)";
-                    e.currentTarget.style.transform = "translateY(0)";
-                  }}
-                >
-                  <h3 className="heading-md" style={{ color: "var(--text-dark)", marginBottom: 12, fontSize: 20 }}>{s.name}</h3>
-                  <p style={{ color: "var(--text-dark-dim)", fontSize: 14, lineHeight: 1.7, margin: 0 }}>{s.summary}</p>
+            <Link to="/services" className="btn btn-outline">All Services <ArrowUpRight size={16} /></Link>
+          </div>
+          <div className="grid-2" style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 20 }}>
+            {(servicesQ.data ?? []).slice(0, 4).map((s) => (
+              <Link key={s.id} to={`/services/${s.slug}`} className="service-reveal" style={{
+                display: "block", background: "var(--void-soft)", borderRadius: "var(--radius-lg)", border: "1px solid var(--line-dark)", overflow: "hidden",
+                textDecoration: "none", color: "inherit", transition: "all 0.4s ease",
+              }}>
+                <div style={{ height: 220, overflow: "hidden" }}>
+                  <img src={s.image || "/assets/hero-structure.jpg"} alt={s.name} style={{ width: "100%", height: "100%", objectFit: "cover", transition: "transform 0.6s ease" }} onError={imgFallback} />
                 </div>
-              ))}
-              {services.isLoading && (
-                <div style={{ color: "var(--text-dark-dim)", fontSize: 14, padding: 36 }}>Loading capabilities...</div>
-              )}
-            </div>
+                <div style={{ padding: "28px 32px" }}>
+                  <p style={{ fontSize: 11, color: "var(--text-faint)", textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: 8 }}>{s.category}</p>
+                  <h3 className="heading-md" style={{ fontSize: 20, marginBottom: 10 }}>{s.name}</h3>
+                  <p style={{ fontSize: 14, lineHeight: 1.7, color: "var(--text-dim)" }}>{s.summary}</p>
+                </div>
+              </Link>
+            ))}
           </div>
         </div>
       </section>
 
-      {/* ===== SELECTED PROJECTS ===== */}
-      <section ref={projectsRef} className="section-dark section-pad">
+      {/* ===== PROJECTS ===== */}
+      <section className="section-dark section-pad" style={{ paddingTop: 0 }}>
         <div className="container">
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", marginBottom: 60, flexWrap: "wrap", gap: 20 }}>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", marginBottom: 48, flexWrap: "wrap", gap: 16 }}>
             <div>
-              <span className="caption" style={{ color: "var(--accent)", display: "block", marginBottom: 16 }}>
-                Selected Work
-              </span>
-              <h2 className="display-md">Projects that speak</h2>
+              <span className="caption" style={{ color: "var(--accent)", display: "block", marginBottom: 16 }}>Selected Work</span>
+              <h2 className="display-md">Proof, built in full view.</h2>
             </div>
-            <Link to="/projects" className="btn btn-outline">
-              View All Projects <ArrowUpRight size={16} />
-            </Link>
+            <Link to="/projects" className="btn btn-outline">All Projects <ArrowUpRight size={16} /></Link>
           </div>
           <div className="grid-3 project-grid" style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 24 }}>
-            {(projects.data ?? []).slice(0, 3).map((p) => (
-              <Link
-                key={p.id}
-                to={`/projects/${p.slug}`}
-                className="project-reveal"
-                style={{
-                  display: "block",
-                  borderRadius: "var(--radius-lg)",
-                  overflow: "hidden",
-                  border: "1px solid var(--line-dark)",
-                  transition: "all 0.5s cubic-bezier(0.4, 0, 0.2, 1)",
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.borderColor = "var(--line-accent)";
-                  e.currentTarget.style.transform = "translateY(-8px)";
-                  const img = e.currentTarget.querySelector("img") as HTMLElement;
-                  if (img) img.style.transform = "scale(1.05)";
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.borderColor = "var(--line-dark)";
-                  e.currentTarget.style.transform = "translateY(0)";
-                  const img = e.currentTarget.querySelector("img") as HTMLElement;
-                  if (img) img.style.transform = "scale(1)";
-                }}
-              >
-                <div style={{ overflow: "hidden", height: 320 }}>
-                  <img
-                    src={p.coverImage || "/assets/project-duplex.webp"}
-                    alt={p.title}
-                    style={{ width: "100%", height: "100%", objectFit: "cover", transition: "transform 0.6s cubic-bezier(0.4, 0, 0.2, 1)" }}
-                  />
-                </div>
-                <div style={{ padding: 28 }}>
-                  <span style={{ fontSize: 11, color: "var(--text-faint)", textTransform: "uppercase", letterSpacing: "0.1em", display: "block", marginBottom: 8 }}>
-                    {p.category}
-                  </span>
-                  <h3 className="heading-md" style={{ fontSize: 20, marginBottom: 8 }}>{p.title}</h3>
-                  <span
-                    style={{
-                      display: "inline-block",
-                      background: "var(--accent-soft)",
-                      color: "var(--accent)",
-                      padding: "6px 16px",
-                      borderRadius: "var(--radius-full)",
-                      fontSize: 10,
-                      fontWeight: 600,
-                      textTransform: "uppercase",
-                      letterSpacing: "0.08em",
-                      marginTop: 8,
-                    }}
-                  >
-                    {p.status}
-                  </span>
+            {(projectsQ.data ?? []).slice(0, 3).map((p, i) => (
+              <Link key={p.id} to={`/projects/${p.slug}`} className="project-reveal" style={{
+                display: "block", position: "relative", borderRadius: "var(--radius-lg)", overflow: "hidden", border: "1px solid var(--line-dark)",
+                textDecoration: "none", color: "inherit",
+                aspectRatio: i === 0 ? "1/1" : "3/4", gridColumn: i === 0 ? "span 2" : "span 1", gridRow: i === 0 ? "span 2" : "span 1",
+              }}>
+                <img src={p.image || "/assets/hero-structure.jpg"} alt={p.title} style={{ width: "100%", height: "100%", objectFit: "cover", transition: "transform 0.6s ease" }} onError={imgFallback} />
+                <div className="project-overlay" style={{ position: "absolute", inset: 0, background: "linear-gradient(to top, rgba(10,10,15,0.85), transparent 60%)", display: "flex", flexDirection: "column", justifyContent: "flex-end", padding: 32 }}>
+                  <p style={{ fontSize: 11, color: "var(--text-faint)", textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: 6 }}>{p.category} · {p.location}</p>
+                  <h3 className="heading-md" style={{ fontSize: 20 }}>{p.title}</h3>
+                  {p.status === "ongoing" && (
+                    <span style={{ display: "inline-block", marginTop: 8, fontSize: 10, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.1em", color: "var(--accent)", border: "1px solid var(--accent)", padding: "4px 10px", borderRadius: 20 }}>Ongoing</span>
+                  )}
                 </div>
               </Link>
             ))}
@@ -369,50 +198,28 @@ export default function Home() {
       </section>
 
       {/* ===== FOUNDER TEASER ===== */}
-      <section ref={founderRef} className="section-void-soft section-pad">
+      <section className="section-cream section-pad" style={{ background: "var(--cream)" }}>
         <div className="container">
           <div className="grid-asym" style={{ display: "grid", gridTemplateColumns: "0.42fr 1fr", gap: 80, alignItems: "center" }}>
-            <div className="founder-reveal" style={{ position: "relative" }}>
-              <img
-                src="/assets/founder.jpg"
-                alt="Founder"
-                style={{
-                  width: "100%",
-                  borderRadius: "var(--radius-xl)",
-                  aspectRatio: "3/4",
-                  objectFit: "cover",
-                  border: "1px solid var(--line-dark)",
-                }}
-              />
-              <div
-                className="float-badge"
-                style={{
-                  position: "absolute",
-                  bottom: -20,
-                  right: -20,
-                  background: "var(--void-soft)",
-                  border: "1px solid var(--line-dark)",
-                  borderRadius: "var(--radius-lg)",
-                  padding: "24px 28px",
-                  maxWidth: 220,
-                }}
-              >
-                <strong style={{ fontFamily: "var(--font-display)", fontSize: 28, color: "var(--text)", display: "block" }}>12+</strong>
-                <span style={{ fontSize: 12, color: "var(--text-dim)", textTransform: "uppercase", letterSpacing: "0.1em" }}>Years Building Nigeria</span>
+            <div style={{ position: "relative" }}>
+              <img src="/assets/founder.jpg" alt="Emmanuel Andrew Nwosu" style={{ width: "100%", borderRadius: "var(--radius-xl)", objectFit: "cover", aspectRatio: "3/4" }} onError={imgFallback} />
+              <div className="float-badge" style={{
+                position: "absolute", bottom: -20, right: -20,
+                background: "var(--warm-white)", border: "1px solid var(--line)",
+                borderRadius: "var(--radius-lg)", padding: "24px 28px", maxWidth: 220,
+              }}>
+                <p className="caption" style={{ color: "var(--accent)", marginBottom: 4 }}>Founder</p>
+                <p style={{ fontFamily: "var(--font-display)", fontSize: 16, color: "var(--ink)" }}>Emmanuel Andrew Nwosu</p>
+                <p style={{ fontSize: 12, color: "var(--stone)", marginTop: 4 }}>Managing Director</p>
               </div>
             </div>
-            <div className="founder-reveal">
-              <span className="caption" style={{ color: "var(--accent)", display: "block", marginBottom: 16 }}>
-                The Founder
-              </span>
-              <h2 className="display-md" style={{ marginBottom: 20 }}>
-                {founder.title || "Leadership Built on Site Experience"}
-              </h2>
-              <span className="accent-line" style={{ marginBottom: 28 }} />
-              <p className="body-lg" style={{ marginBottom: 32, maxWidth: 560 }}>
-                {founder.body || "Every decision at SR Construction is informed by years of hands-on project execution. We don't just manage builds — we engineer outcomes."}
+            <div>
+              <span className="caption" style={{ color: "var(--accent)", display: "block", marginBottom: 16 }}>Leadership</span>
+              <h2 className="display-md" style={{ marginBottom: 20, color: "var(--ink)" }}>Engineering, discipline and clear communication.</h2>
+              <p className="body-lg" style={{ marginBottom: 28, color: "var(--stone)" }}>
+                Emmanuel Andrew Nwosu leads SR Construction with a clear conviction: clients should not have to choose between ambitious design and disciplined execution. His approach puts sound engineering, visible accountability and practical communication at the centre of every project.
               </p>
-              <Link to="/founder" className="btn btn-outline">
+              <Link to="/founder" className="btn btn-outline" style={{ color: "var(--ink)", borderColor: "var(--line)" }}>
                 Meet the Founder <ArrowUpRight size={16} />
               </Link>
             </div>
@@ -421,33 +228,18 @@ export default function Home() {
       </section>
 
       {/* ===== METRICS ===== */}
-      <section ref={metricsRef} className="section-dark section-pad-sm" style={{ borderTop: "1px solid var(--line-dark)" }}>
+      <section className="section-dark section-pad">
         <div className="container">
-          <div className="grid-4" style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 24 }}>
+          <div className="grid-4" style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 20 }}>
             {[
-              { icon: Building, value: "50+", label: "Projects Delivered" },
-              { icon: Users, value: "30+", label: "Team Members" },
-              { icon: HardHat, value: "12+", label: "Years Active" },
-              { icon: TrendingUp, value: "100%", label: "Client Satisfaction" },
-            ].map((m) => (
-              <div
-                key={m.label}
-                className="metric-reveal"
-                style={{
-                  textAlign: "center",
-                  padding: "40px 24px",
-                  background: "var(--void-soft)",
-                  borderRadius: "var(--radius-lg)",
-                  border: "1px solid var(--line-dark)",
-                }}
-              >
-                <m.icon size={24} style={{ color: "var(--accent)", marginBottom: 16 }} />
-                <strong style={{ fontFamily: "var(--font-display)", fontSize: 42, color: "var(--text)", display: "block", marginBottom: 8, lineHeight: 1 }}>
-                  {m.value}
-                </strong>
-                <span style={{ fontSize: 12, color: "var(--text-faint)", textTransform: "uppercase", letterSpacing: "0.1em" }}>
-                  {m.label}
-                </span>
+              { label: "Projects Delivered", value: page.statsProjects || "50+" },
+              { label: "Years Building", value: page.statsYears || "12+" },
+              { label: "States Covered", value: page.statsStates || "6" },
+              { label: "Field Staff", value: page.statsTeam || "80+" },
+            ].map((s) => (
+              <div key={s.label} className="metric-reveal" style={{ textAlign: "center", padding: "clamp(32px, 4vw, 48px)", background: "var(--void-soft)", borderRadius: "var(--radius-lg)", border: "1px solid var(--line-dark)" }}>
+                <strong className="stat-number" style={{ fontFamily: "var(--font-display)", fontSize: 42, color: "var(--text)", display: "block", marginBottom: 8 }}>{s.value}</strong>
+                <span style={{ fontSize: 12, color: "var(--text-faint)", textTransform: "uppercase", letterSpacing: "0.08em" }}>{s.label}</span>
               </div>
             ))}
           </div>
