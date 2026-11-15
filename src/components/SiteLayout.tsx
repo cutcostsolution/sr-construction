@@ -8,8 +8,8 @@ const NAV = [
   ["About", "/about"],
   ["Services", "/services"],
   ["Projects", "/projects"],
-  ["The Founder", "/founder"],
-  ["Our Network", "/network"],
+  ["Founder", "/founder"],
+  ["Network", "/network"],
   ["Contact", "/contact"],
 ];
 
@@ -32,7 +32,8 @@ export function Header() {
       <header className={`site-header ${scrolled ? "scrolled" : ""}`}>
         <div className="header-inner">
           <Link to="/" className="brand-logo" aria-label="SR Construction home">
-            <img src="/assets/logo-light.png" alt="SR Construction" height={40} />
+            <span className="logo-mark">SR</span>
+            <span className="logo-text">CONSTRUCTION</span>
           </Link>
 
           <nav className="desktop-nav" aria-label="Main navigation">
@@ -43,18 +44,19 @@ export function Header() {
             ))}
           </nav>
 
-          <Link to="/consultation" className="btn btn-primary" style={{ fontSize: 11, padding: "14px 24px" }}>
-            Book Consultation <ArrowUpRight size={14} />
-          </Link>
-
-          <button
-            className="mobile-toggle"
-            onClick={() => setOpen(!open)}
-            aria-expanded={open}
-            aria-label="Toggle menu"
-          >
-            {open ? <X size={24} /> : <Menu size={24} />}
-          </button>
+          <div className="header-actions">
+            <Link to="/consultation" className="btn btn-primary btn-sm">
+              Book Consultation <ArrowUpRight size={14} />
+            </Link>
+            <button
+              className="mobile-toggle"
+              onClick={() => setOpen(!open)}
+              aria-expanded={open}
+              aria-label="Toggle menu"
+            >
+              {open ? <X size={24} /> : <Menu size={24} />}
+            </button>
+          </div>
         </div>
       </header>
 
@@ -87,7 +89,7 @@ export function Footer() {
       <div className="footer-grid">
         <div>
           <div className="footer-brand">
-            <img src="/assets/logo-light.png" alt="SR Construction" height={36} />
+            <span className="logo-mark" style={{ fontSize: 28 }}>SR</span>
             <span className="footer-brand-text">SR CONSTRUCTION</span>
           </div>
           <p className="footer-desc">
@@ -185,7 +187,7 @@ export function ConsultationCTA({
   body?: string;
 }) {
   return (
-    <section className="section-dark section-pad" style={{ textAlign: "center" }}>
+    <section className="section-cta" style={{ textAlign: "center" }}>
       <div className="container-narrow">
         <span className="caption" style={{ color: "var(--accent)" }}>
           Your Next Step
