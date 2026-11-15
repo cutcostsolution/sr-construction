@@ -1,23 +1,38 @@
-import devServer from "@hono/vite-dev-server"
 import path from "path"
 const __dirname = import.meta.dirname
 import react from "@vitejs/plugin-react"
 import { defineConfig } from "vite"
-import { inspectAttr } from 'kimi-plugin-inspect-react'
+
+// Conditionally load dev-only plugins so production build doesn't crash
+// if devDependencies aren't available (e.g. on Render)
+let devServerPlugin: any = null
+let inspectPlugin: any = null
+try {
+  const { default: devServer } = await import("@hono/vite-dev-server")
+  devServerPlugin = devServer({ entry: "api/boot.ts", exclude: [/^\/(?!api\/).*$/] })
+} catch { /* dev-only, ignore in production */ }
+try {
+  const { inspectAttr } = await import("kimi-plugin-inspect-react")
+  inspectPlugin = inspectAttr()
+} catch { /* dev-only, ignore in production */ }
+
+const plugins: any[] = [
+  {
+    name: "kimi-preview-host",
+    config(config: any) {
+      const hosts = config.server?.allowedHosts;
+      if (hosts === true || hosts?.includes("3000.proxy.internal")) return;
+      return { server: { allowedHosts: ["3000.proxy.internal"] } };
+    },
+  },
+]
+if (devServerPlugin) plugins.push(devServerPlugin)
+if (inspectPlugin) plugins.push(inspectPlugin)
+plugins.push(react())
 
 // https://vite.dev/config/
 export default defineConfig({
-  plugins: [
-    {
-      name: "kimi-preview-host",
-      config(config) {
-        const hosts = config.server?.allowedHosts;
-        if (hosts === true || hosts?.includes("3000.proxy.internal")) return;
-        return { server: { allowedHosts: ["3000.proxy.internal"] } };
-      },
-    },
-    devServer({ entry: "api/boot.ts", exclude: [/^\/(?!api\/).*$/] }),
-    inspectAttr(), react()],
+  plugins,
   server: {
     port: 3000,
   },
@@ -34,4 +49,4 @@ export default defineConfig({
     outDir: path.resolve(__dirname, "dist/public"),
     emptyOutDir: true,
   },
-});
+})
