@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link, NavLink, Outlet, useNavigate } from "react-router";
-import { Bell, BookOpen, BriefcaseBusiness, ChevronRight, ExternalLink, FileText, FolderKanban, LayoutDashboard, LogOut, Menu, MessageSquare, Settings, Users, X } from "lucide-react";
+import { Bell, BookOpen, BriefcaseBusiness, ChevronRight, ExternalLink, FileText, FolderKanban, Image, LayoutDashboard, LogOut, Menu, MessageSquare, Settings, Users, X } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { trpc } from "@/providers/trpc";
 
@@ -13,6 +13,7 @@ const links = [
   ["/admin/blogs", "Blogs", BookOpen],
   ["/admin/applications", "Network Applications", Users],
   ["/admin/enquiries", "Enquiries", MessageSquare],
+  ["/admin/media", "Media Library", Image],
   ["/admin/settings", "Settings & Payments", Settings],
 ];
 

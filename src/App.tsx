@@ -25,6 +25,7 @@ const AdminBlogs = lazy(() => import("@/pages/admin/AdminBlogs"));
 const AdminApplications = lazy(() => import("@/pages/admin/AdminApplications"));
 const AdminEnquiries = lazy(() => import("@/pages/admin/AdminEnquiries"));
 const AdminSettings = lazy(() => import("@/pages/admin/AdminSettings"));
+const AdminMedia = lazy(() => import("@/pages/admin/AdminMedia"));
 
 function PublicShell() { return <SiteLayout><Outlet /></SiteLayout>; }
 
@@ -46,6 +47,7 @@ export default function App() {
       <Route path="content" element={<AdminContent />} /><Route path="blogs" element={<AdminBlogs />} />
       <Route path="applications" element={<AdminApplications />} /><Route path="enquiries" element={<AdminEnquiries />} />
       <Route path="settings" element={<AdminSettings />} />
+      <Route path="media" element={<AdminMedia />} />
     </Route>
   </Routes></Suspense>;
 }

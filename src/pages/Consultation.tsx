@@ -6,44 +6,41 @@ import { usePage } from "@/lib/site";
 export default function Consultation() {
   const { page } = usePage("consultation");
   const [stage, setStage] = useState<"form" | "success" | "payment" | "confirm">("form");
-  const [data, setData] = useState({
-    name: "",
-    email: "",
-    phone: "",
-    location: "",
-    projectType: "",
-    budgetRange: "",
-    preferredDate: "",
-    message: "",
-  });
+  const [data, setData] = useState<{
+    name: string; email: string; phone: string; reference: string; agreedFee: number;
+  } | null>(null);
   const [error, setError] = useState("");
-  const mutation = trpc.public.book.useMutation();
+  // CORRECTED: use bookConsultation (not book)
+  const mutation = trpc.public.bookConsultation.useMutation({
+    onSuccess: (res) => {
+      setData({ name: res.name || "", email: res.email || "", phone: res.phone || "", reference: res.reference, agreedFee: res.agreedFee });
+      setStage("success");
+    },
+    onError: (err) => setError(err.message),
+  });
 
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setError("");
-    try {
-      const form = event.currentTarget;
-      const fd = new FormData(form);
-      const payload = {
-        name: String(fd.get("name")),
-        email: String(fd.get("email")),
-        phone: String(fd.get("phone")),
-        location: String(fd.get("location")),
-        projectType: String(fd.get("projectType")),
-        budgetRange: String(fd.get("budgetRange")),
-        preferredDate: String(fd.get("preferredDate")),
-        message: String(fd.get("message")),
-      };
-      await mutation.mutateAsync(payload);
-      setData(payload);
-      setStage("success");
-    } catch (e) {
-      setError(e instanceof Error ? e.message : "Booking failed. Please try again.");
-    }
+    const form = event.currentTarget;
+    const fd = new FormData(form);
+    const projectType = String(fd.get("projectType"));
+    // Map frontend fields to backend fields
+    mutation.mutate({
+      name: String(fd.get("name")),
+      email: String(fd.get("email")),
+      phone: String(fd.get("phone")),
+      company: String(fd.get("company") || ""),
+      type: projectType,
+      projectCategory: projectType,
+      projectLocation: String(fd.get("location")),
+      description: String(fd.get("message")),
+      preferredDate: String(fd.get("preferredDate") || new Date().toISOString().split("T")[0]),
+      preferredTime: "Flexible",
+    });
   }
 
-  if (stage === "success") {
+  if (stage === "success" && data) {
     return (
       <section className="section-dark" style={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center", padding: "120px 5vw 60px" }}>
         <div style={{ maxWidth: 600, textAlign: "center" }}>
@@ -67,50 +64,48 @@ export default function Consultation() {
               marginBottom: 32,
             }}
           >
-            <div className="grid-2" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
-              <div><span style={{ fontSize: 11, color: "var(--text-faint)", textTransform: "uppercase", letterSpacing: "0.1em", display: "block", marginBottom: 4 }}>Name</span><span style={{ fontSize: 14, color: "var(--text)" }}>{data.name}</span></div>
-              <div><span style={{ fontSize: 11, color: "var(--text-faint)", textTransform: "uppercase", letterSpacing: "0.1em", display: "block", marginBottom: 4 }}>Email</span><span style={{ fontSize: 14, color: "var(--text)" }}>{data.email}</span></div>
-              <div><span style={{ fontSize: 11, color: "var(--text-faint)", textTransform: "uppercase", letterSpacing: "0.1em", display: "block", marginBottom: 4 }}>Phone</span><span style={{ fontSize: 14, color: "var(--text)" }}>{data.phone}</span></div>
-              <div><span style={{ fontSize: 11, color: "var(--text-faint)", textTransform: "uppercase", letterSpacing: "0.1em", display: "block", marginBottom: 4 }}>Project Type</span><span style={{ fontSize: 14, color: "var(--text)" }}>{data.projectType}</span></div>
-              <div><span style={{ fontSize: 11, color: "var(--text-faint)", textTransform: "uppercase", letterSpacing: "0.1em", display: "block", marginBottom: 4 }}>Preferred Date</span><span style={{ fontSize: 14, color: "var(--text)" }}>{data.preferredDate || "Flexible"}</span></div>
-              <div><span style={{ fontSize: 11, color: "var(--text-faint)", textTransform: "uppercase", letterSpacing: "0.1em", display: "block", marginBottom: 4 }}>Budget Range</span><span style={{ fontSize: 14, color: "var(--text)" }}>{data.budgetRange || "Not specified"}</span></div>
+            <div style={{ display: "flex", justifyContent: "space-between", paddingBottom: 12, borderBottom: "1px solid var(--line-dark)", marginBottom: 12 }}>
+              <span style={{ fontSize: 11, color: "var(--text-faint)", textTransform: "uppercase", letterSpacing: "0.1em" }}>Reference</span>
+              <span style={{ fontSize: 14, color: "var(--text)", fontFamily: "var(--font-display)" }}>{data.reference}</span>
+            </div>
+            <div style={{ display: "flex", justifyContent: "space-between", paddingBottom: 12, borderBottom: "1px solid var(--line-dark)", marginBottom: 12 }}>
+              <span style={{ fontSize: 11, color: "var(--text-faint)", textTransform: "uppercase", letterSpacing: "0.1em" }}>Name</span>
+              <span style={{ fontSize: 14, color: "var(--text)" }}>{data.name}</span>
+            </div>
+            <div style={{ display: "flex", justifyContent: "space-between", paddingBottom: 12, borderBottom: "1px solid var(--line-dark)", marginBottom: 12 }}>
+              <span style={{ fontSize: 11, color: "var(--text-faint)", textTransform: "uppercase", letterSpacing: "0.1em" }}>Email</span>
+              <span style={{ fontSize: 14, color: "var(--text)" }}>{data.email}</span>
+            </div>
+            <div style={{ display: "flex", justifyContent: "space-between" }}>
+              <span style={{ fontSize: 11, color: "var(--text-faint)", textTransform: "uppercase", letterSpacing: "0.1em" }}>Consultation Fee</span>
+              <span style={{ fontSize: 14, color: "var(--accent)", fontWeight: 600 }}>
+                {data.agreedFee > 0 ? `₦${data.agreedFee.toLocaleString()}` : "Free"}
+              </span>
             </div>
           </div>
           <div style={{ display: "flex", gap: 16, justifyContent: "center", flexWrap: "wrap" }}>
-            <button className="btn btn-primary" onClick={() => setStage("payment")}>
-              Pay Consultation Fee <ArrowUpRight size={16} />
-            </button>
-            <a href="/" className="btn btn-outline">
-              Back to Home
-            </a>
+            {data.agreedFee > 0 ? (
+              <button className="btn btn-primary" onClick={() => setStage("payment")}>
+                Pay Consultation Fee <ArrowUpRight size={16} />
+              </button>
+            ) : null}
+            <a href="/" className="btn btn-outline">Back to Home</a>
           </div>
         </div>
       </section>
     );
   }
 
-  if (stage === "payment") {
+  if (stage === "payment" && data) {
     return (
       <section className="section-dark" style={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center", padding: "120px 5vw 60px" }}>
         <div style={{ maxWidth: 500, width: "100%" }}>
-          <span className="caption" style={{ color: "var(--accent)", display: "block", marginBottom: 16 }}>
-            Payment
-          </span>
-          <h2 className="display-md" style={{ marginBottom: 12 }}>
-            Consultation Fee
-          </h2>
+          <span className="caption" style={{ color: "var(--accent)", display: "block", marginBottom: 16 }}>Payment</span>
+          <h2 className="display-md" style={{ marginBottom: 12 }}>Consultation Fee</h2>
           <p className="body-lg" style={{ marginBottom: 32 }}>
-            Secure your slot with a fully refundable ₦20,000 consultation fee. This covers site assessment and initial planning.
+            Secure your slot with a fully refundable consultation fee. This covers site assessment and initial planning.
           </p>
-          <div
-            style={{
-              background: "var(--void-soft)",
-              borderRadius: "var(--radius-lg)",
-              border: "1px solid var(--line-dark)",
-              padding: 32,
-              marginBottom: 24,
-            }}
-          >
+          <div style={{ background: "var(--void-soft)", borderRadius: "var(--radius-lg)", border: "1px solid var(--line-dark)", padding: 32, marginBottom: 24 }}>
             <h3 className="heading-md" style={{ marginBottom: 16 }}>Bank Transfer</h3>
             <div style={{ display: "flex", flexDirection: "column", gap: 12, fontSize: 14 }}>
               <div style={{ display: "flex", justifyContent: "space-between", paddingBottom: 8, borderBottom: "1px solid var(--line-dark)" }}>
@@ -127,17 +122,14 @@ export default function Consultation() {
               </div>
               <div style={{ display: "flex", justifyContent: "space-between" }}>
                 <span style={{ color: "var(--text-faint)" }}>Amount</span>
-                <span style={{ color: "var(--accent)", fontWeight: 600 }}>₦20,000.00</span>
+                <span style={{ color: "var(--accent)", fontWeight: 600 }}>₦{data.agreedFee.toLocaleString()}</span>
               </div>
             </div>
+            <p style={{ fontSize: 12, color: "var(--text-faint)", marginTop: 16 }}>Reference: <strong style={{ color: "var(--text)" }}>{data.reference}</strong></p>
           </div>
           <div style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
-            <button className="btn btn-outline" onClick={() => setStage("success")}>
-              I'll Pay Later
-            </button>
-            <button className="btn btn-primary" onClick={() => setStage("confirm")}>
-              I've Paid <ArrowUpRight size={16} />
-            </button>
+            <button className="btn btn-outline" onClick={() => setStage("success")}>I'll Pay Later</button>
+            <button className="btn btn-primary" onClick={() => setStage("confirm")}>I've Paid <ArrowUpRight size={16} /></button>
           </div>
         </div>
       </section>
@@ -149,15 +141,11 @@ export default function Consultation() {
       <section className="section-dark" style={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center", padding: "120px 5vw 60px" }}>
         <div style={{ maxWidth: 500, textAlign: "center" }}>
           <CheckCircle2 size={64} style={{ color: "var(--accent)", marginBottom: 24 }} />
-          <h2 className="display-md" style={{ marginBottom: 12 }}>
-            Payment Submitted
-          </h2>
+          <h2 className="display-md" style={{ marginBottom: 12 }}>Payment Submitted</h2>
           <p className="body-lg" style={{ marginBottom: 32 }}>
             Thank you. Our team will verify your payment and confirm your consultation slot within 24 hours.
           </p>
-          <a href="/" className="btn btn-primary">
-            Back to Home <ArrowUpRight size={16} />
-          </a>
+          <a href="/" className="btn btn-primary">Back to Home <ArrowUpRight size={16} /></a>
         </div>
       </section>
     );
@@ -190,7 +178,7 @@ export default function Consultation() {
               background: "var(--void-soft)",
               borderRadius: "var(--radius-xl)",
               border: "1px solid var(--line-dark)",
-              padding: 60,
+              padding: "clamp(32px, 5vw, 60px)",
             }}
           >
             <form onSubmit={submit}>
@@ -223,15 +211,8 @@ export default function Consultation() {
                   </select>
                 </div>
                 <div className="input-group">
-                  <label htmlFor="budgetRange">Budget Range</label>
-                  <select id="budgetRange" name="budgetRange">
-                    <option value="">Select budget range</option>
-                    <option value="Below ₦5M">Below ₦5 Million</option>
-                    <option value="₦5M - ₦20M">₦5M - ₦20 Million</option>
-                    <option value="₦20M - ₦50M">₦20M - ₦50 Million</option>
-                    <option value="₦50M - ₦100M">₦50M - ₦100 Million</option>
-                    <option value="Above ₦100M">Above ₦100 Million</option>
-                  </select>
+                  <label htmlFor="company">Company (optional)</label>
+                  <input id="company" name="company" type="text" placeholder="Your company name" />
                 </div>
                 <div className="input-group full">
                   <label htmlFor="preferredDate">Preferred Date</label>
