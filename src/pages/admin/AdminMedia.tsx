@@ -36,10 +36,11 @@ export default function AdminMedia() {
 
   return (
     <div>
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 32 }}>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 32, flexWrap: "wrap", gap: 16 }}>
         <div>
           <h2 style={{ fontFamily: "var(--font-display)", fontSize: 24, marginBottom: 4 }}>Media Library</h2>
-          <p style={{ fontSize: 13, color: "var(--muted)" }}>Upload and manage images for projects, services, blogs and pages.</p>
+          <p style={{ fontSize: 13, color: "var(--muted)" }}>Upload images here, then use the key in Website Content or paste the URL directly.</p>
+          <p style={{ fontSize: 11, color: "var(--muted)", marginTop: 4 }}>Tip: Copy the Key and paste it into any image field (heroImage, image, gallery, etc.) in Website Content.</p>
         </div>
         <label style={{
           display: "flex", alignItems: "center", gap: 8,
@@ -90,13 +91,20 @@ export default function AdminMedia() {
                 <div style={{ padding: 12 }}>
                   <p style={{ fontSize: 12, color: "var(--ink)", marginBottom: 4, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{m.name}</p>
                   <p style={{ fontSize: 11, color: "var(--muted)", marginBottom: 12 }}>{(m.size / 1024).toFixed(1)} KB</p>
-                  <div style={{ display: "flex", gap: 6 }}>
+                  <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
                     <button onClick={() => copyKey(m.key)} style={{
                       flex: 1, display: "flex", alignItems: "center", justifyContent: "center", gap: 4,
                       padding: "6px 8px", fontSize: 11, border: "1px solid var(--line)",
                       borderRadius: "var(--radius-sm)", background: "white", cursor: "pointer", color: "var(--ink)",
                     }}>
                       <Copy size={12} /> {copied ? "Copied!" : "Copy Key"}
+                    </button>
+                    <button onClick={() => copyKey(`${window.location.origin}/api/media?key=${encodeURIComponent(m.key)}`)} style={{
+                      flex: 1, display: "flex", alignItems: "center", justifyContent: "center", gap: 4,
+                      padding: "6px 8px", fontSize: 11, border: "1px solid var(--burgundy)",
+                      borderRadius: "var(--radius-sm)", background: "white", cursor: "pointer", color: "var(--burgundy)",
+                    }}>
+                      <ExternalLink size={12} /> Copy URL
                     </button>
                     <button onClick={() => { if (confirm("Delete this image?")) remove.mutate({ id: m.id, key: m.key }); }} style={{
                       padding: "6px 8px", fontSize: 11, border: "1px solid #dc2626",

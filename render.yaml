@@ -1,6 +1,6 @@
 services:
   - type: web
-    name: sr-construction-v5
+    name: sr-construction-live
     runtime: node
     branch: main
     buildCommand: npm install --include=dev && npm run build

@@ -243,6 +243,7 @@ async function autoSeed() {
         kicker: "Grow With Us",
         title: "Build Your Future With SR Construction",
         body: "We believe in building people as much as we believe in building structures. Whether you are a skilled artisan, a reliable supplier or a technical expert, SR Construction is your platform to grow, earn and leave a legacy.",
+        heroImage: "/assets/hero-building.jpg",
       },
       consultation: {
         kicker: "Book a Consultation",

@@ -73,41 +73,21 @@ export default function Network() {
   return (
     <>
       {/* ===== HERO ===== */}
-      <section
-        style={{
-          minHeight: "70vh",
-          position: "relative",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          overflow: "hidden",
-        }}
-      >
+      <section className="hero-fullbleed" style={{ minHeight: "75vh", justifyContent: "center" }}>
         <div
+          className="hero-bg loaded"
           style={{
-            position: "absolute",
-            inset: 0,
-            backgroundImage: "url(/assets/hero-building.jpg)",
-            backgroundSize: "cover",
-            backgroundPosition: "center",
-            opacity: 0.3,
+            backgroundImage: `url(${page.heroImage || "/assets/hero-building.jpg"})`,
           }}
         />
-        <div
-          style={{
-            position: "absolute",
-            inset: 0,
-            background: "linear-gradient(135deg, rgba(10,10,15,0.85) 0%, rgba(10,10,15,0.6) 100%)",
-          }}
-        />
-        <div className="container hero-pad" style={{ position: "relative", zIndex: 2, textAlign: "center", padding: "140px 5vw 80px" }}>
-          <span className="caption" style={{ color: "var(--accent)", display: "block", marginBottom: 20 }}>
-            {page.kicker || "Grow With Us"}
-          </span>
-          <h1 className="display-lg" style={{ marginBottom: 20, maxWidth: 800, margin: "0 auto 20px" }}>
-            {page.title || "Build Your Future With SR Construction"}
+        <div className="hero-overlay" />
+        <div className="hero-content" style={{ textAlign: "center", paddingTop: "160px" }}>
+          <span className="hero-kicker">{page.kicker || "Grow With Us"}</span>
+          <h1 className="hero-title" style={{ textAlign: "center", maxWidth: 900, margin: "0 auto 24px" }}>
+            Build Your Future<br />
+            <span className="hero-accent">With SR Construction</span>
           </h1>
-          <p className="body-lg" style={{ maxWidth: 680, margin: "0 auto", fontSize: 18 }}>
+          <p className="hero-body" style={{ maxWidth: 640, margin: "0 auto" }}>
             {page.body || "We believe in building people as much as we believe in building structures. Whether you are a skilled artisan, a reliable supplier or a technical expert, SR Construction is your platform to grow, earn and leave a legacy."}
           </p>
         </div>
